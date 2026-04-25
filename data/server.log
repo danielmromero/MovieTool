@@ -1,0 +1,4 @@
+[2026-04-25 00:15:15] Server starting on http://127.0.0.1:8766/
+[2026-04-25 00:15:20] Auto-refresh trigger: initial catalog build.
+[2026-04-25 00:15:20] Refreshing catalog...
+[2026-04-25 00:15:20] Refresh task failed: <urlopen error [Errno -3] Temporary failure in name resolution>

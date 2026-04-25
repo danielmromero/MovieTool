@@ -1,0 +1,12 @@
+{
+  "generated_at": null,
+  "coverage": {},
+  "items": [],
+  "notes": [
+    "Latest refresh failed: <urlopen error [Errno -3] Temporary failure in name resolution>"
+  ],
+  "last_error": "<urlopen error [Errno -3] Temporary failure in name resolution>",
+  "last_attempted_at": "2026-04-25T00:15:20.345741+00:00",
+  "source": "JustWatch unofficial GraphQL endpoint",
+  "region": "US"
+}
