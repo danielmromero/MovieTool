@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
+import copy
+import gzip
 import json
 import math
 import os
@@ -34,6 +36,11 @@ PAGE_SIZE = 100
 REQUEST_TIMEOUT = 25
 AUTO_REFRESH_INTERVAL_SECONDS = 2 * 24 * 60 * 60
 MANUAL_REFRESH_PASSWORD = os.getenv("MANUAL_REFRESH_PASSWORD", "GetTheNewStuff")
+GITHUB_REFRESH_REPO = os.getenv("GITHUB_REFRESH_REPO", "").strip()
+GITHUB_REFRESH_WORKFLOW = os.getenv("GITHUB_REFRESH_WORKFLOW", "refresh_catalog.yml").strip()
+GITHUB_REFRESH_REF = os.getenv("GITHUB_REFRESH_REF", "main").strip()
+GITHUB_REFRESH_TOKEN = os.getenv("GITHUB_REFRESH_TOKEN", "").strip()
+GITHUB_API_BASE = os.getenv("GITHUB_API_BASE", "https://api.github.com").rstrip("/")
 
 DATA_DIR.mkdir(exist_ok=True)
 
@@ -243,6 +250,8 @@ QUERIES = {
 TASKS = {}
 TASK_LOCK = threading.Lock()
 ACTOR_CACHE_LOCK = threading.Lock()
+CATALOG_MEMO_LOCK = threading.Lock()
+CATALOG_MEMO: dict[str, object] = {"path": None, "mtime_ns": None, "data": None}
 
 
 def log(message: str) -> None:
@@ -276,8 +285,22 @@ def _read_catalog_file(path: Path) -> dict | None:
     if not path.exists():
         return None
     try:
+        stat = path.stat()
+    except Exception:
+        stat = None
+    memo_key = str(path.resolve())
+    if stat is not None:
+        with CATALOG_MEMO_LOCK:
+            if CATALOG_MEMO.get("path") == memo_key and CATALOG_MEMO.get("mtime_ns") == stat.st_mtime_ns and isinstance(CATALOG_MEMO.get("data"), dict):
+                return CATALOG_MEMO["data"]
+    try:
         data = json.loads(path.read_text(encoding="utf-8"))
-        return data if isinstance(data, dict) else None
+        if not isinstance(data, dict):
+            return None
+        if stat is not None:
+            with CATALOG_MEMO_LOCK:
+                CATALOG_MEMO.update({"path": memo_key, "mtime_ns": stat.st_mtime_ns, "data": data})
+        return data
     except Exception as exc:
         log(f"Failed to load catalog file {path.name}: {exc}")
         return None
@@ -306,6 +329,12 @@ def save_cache(data: dict) -> None:
         _atomic_write_json(LEGACY_CACHE_FILE, data)
     except Exception as exc:
         log(f"Failed to mirror legacy cache file: {exc}")
+    try:
+        stat = CACHE_FILE.stat()
+        with CATALOG_MEMO_LOCK:
+            CATALOG_MEMO.update({"path": str(CACHE_FILE.resolve()), "mtime_ns": stat.st_mtime_ns, "data": data})
+    except Exception:
+        pass
 
 
 def snapshot_is_stale(cache: dict, now: datetime | None = None) -> bool:
@@ -406,24 +435,28 @@ def service_match(provider: dict, target: dict) -> bool:
     return True
 
 
-def json_response(handler: BaseHTTPRequestHandler, payload: dict, status: int = 200) -> None:
-    body = json.dumps(payload).encode("utf-8")
-    handler.send_response(status)
-    handler.send_header("Content-Type", "application/json; charset=utf-8")
-    handler.send_header("Content-Length", str(len(body)))
-    handler.send_header("Cache-Control", "no-store")
-    handler.end_headers()
-    handler.wfile.write(body)
-
-
-def text_response(handler: BaseHTTPRequestHandler, text: str, status: int = 200, content_type: str = "text/plain; charset=utf-8") -> None:
-    body = text.encode("utf-8")
+def _write_response(handler: BaseHTTPRequestHandler, body: bytes, status: int, content_type: str) -> None:
+    use_gzip = "gzip" in (handler.headers.get("Accept-Encoding", "") or "").lower() and len(body) > 1200
+    if use_gzip:
+        body = gzip.compress(body, compresslevel=6)
     handler.send_response(status)
     handler.send_header("Content-Type", content_type)
     handler.send_header("Content-Length", str(len(body)))
     handler.send_header("Cache-Control", "no-store")
+    handler.send_header("Vary", "Accept-Encoding")
+    if use_gzip:
+        handler.send_header("Content-Encoding", "gzip")
     handler.end_headers()
     handler.wfile.write(body)
+
+
+def json_response(handler: BaseHTTPRequestHandler, payload: dict, status: int = 200) -> None:
+    body = json.dumps(payload, separators=(",", ":")).encode("utf-8")
+    _write_response(handler, body, status, "application/json; charset=utf-8")
+
+
+def text_response(handler: BaseHTTPRequestHandler, text: str, status: int = 200, content_type: str = "text/plain; charset=utf-8") -> None:
+    _write_response(handler, text.encode("utf-8"), status, content_type)
 
 
 def read_json_body(handler: BaseHTTPRequestHandler) -> dict:
@@ -993,7 +1026,7 @@ def get_running_task() -> dict | None:
 
 
 def build_catalog_payload() -> dict:
-    payload = load_cache()
+    payload = dict(load_cache())
     running = get_running_task()
     if running:
         payload["running_task"] = {
@@ -1007,6 +1040,10 @@ def build_catalog_payload() -> dict:
     payload["manual_refresh_requires_password"] = True
     payload["refresh_strategy"] = "github_snapshot"
     payload["snapshot_file"] = CACHE_FILE.name
+    payload["manual_refresh_target"] = "github_actions_workflow"
+    payload["manual_refresh_configured"] = bool(GITHUB_REFRESH_REPO and GITHUB_REFRESH_TOKEN and GITHUB_REFRESH_WORKFLOW and GITHUB_REFRESH_REF)
+    if GITHUB_REFRESH_REPO and GITHUB_REFRESH_WORKFLOW:
+        payload["github_actions_url"] = f"https://github.com/{GITHUB_REFRESH_REPO}/actions/workflows/{GITHUB_REFRESH_WORKFLOW}"
     return payload
 
 
@@ -1066,14 +1103,49 @@ class Handler(BaseHTTPRequestHandler):
             if password != MANUAL_REFRESH_PASSWORD:
                 json_response(self, {"error": "Incorrect refresh password."}, status=403)
                 return
-            running = get_running_task()
-            if running:
-                json_response(self, {"task_id": running["id"], "status": "already_running"})
+            try:
+                dispatched = dispatch_github_refresh(force=True)
+            except RuntimeError as exc:
+                json_response(self, {"error": str(exc)}, status=503)
                 return
-            task_id = start_refresh_task(auto=False)
-            json_response(self, {"task_id": task_id, "status": "started"})
+            json_response(self, {"status": "workflow_dispatched", **dispatched})
             return
         json_response(self, {"error": "Not found"}, status=404)
+
+
+def dispatch_github_refresh(force: bool = True) -> dict:
+    if not (GITHUB_REFRESH_REPO and GITHUB_REFRESH_TOKEN and GITHUB_REFRESH_WORKFLOW and GITHUB_REFRESH_REF):
+        raise RuntimeError("GitHub workflow refresh is not configured on this server yet.")
+    url = f"{GITHUB_API_BASE}/repos/{GITHUB_REFRESH_REPO}/actions/workflows/{urllib.parse.quote(GITHUB_REFRESH_WORKFLOW, safe='')}/dispatches"
+    payload = {"ref": GITHUB_REFRESH_REF, "inputs": {"force": "true" if force else "false"}}
+    req = urllib.request.Request(
+        url,
+        data=json.dumps(payload).encode("utf-8"),
+        headers={
+            "Authorization": f"Bearer {GITHUB_REFRESH_TOKEN}",
+            "Accept": "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2022-11-28",
+            "Content-Type": "application/json",
+            "User-Agent": "DanielsMovieTool/1.0",
+        },
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            status = getattr(resp, "status", 0)
+            if status not in (200, 201, 202, 204):
+                raise RuntimeError(f"GitHub returned status {status} while dispatching the workflow.")
+    except urllib.error.HTTPError as exc:
+        details = exc.read().decode("utf-8", errors="ignore")
+        raise RuntimeError(details or f"GitHub returned HTTP {exc.code}.") from exc
+    except urllib.error.URLError as exc:
+        raise RuntimeError(f"Could not reach GitHub: {exc.reason}") from exc
+    return {
+        "repo": GITHUB_REFRESH_REPO,
+        "workflow": GITHUB_REFRESH_WORKFLOW,
+        "ref": GITHUB_REFRESH_REF,
+        "actions_url": f"https://github.com/{GITHUB_REFRESH_REPO}/actions/workflows/{GITHUB_REFRESH_WORKFLOW}",
+    }
 
 
 def choose_port(start: int = DEFAULT_PORT) -> int:

@@ -118,30 +118,40 @@
     }
     .range-row, .stack-4 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
     .results-head { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; margin-bottom: 14px; }
+    .results-main-stack { display: grid; gap: 12px; }
     .results-head h2 { margin: 0; font-size: 22px; }
     .results-meta { color: var(--muted); font-size: 13px; }
-    .toolbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .toolbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 8px; }
     .preset-row, .active-summary { display: flex; flex-wrap: wrap; gap: 8px; }
     .result-table-wrap { overflow: auto; border-radius: 20px; border: 1px solid rgba(255,255,255,0.07); background: var(--panel-2); }
-    table { width: 100%; border-collapse: collapse; min-width: 1380px; }
+    table { width: 100%; border-collapse: collapse; min-width: 0; table-layout: fixed; }
     thead th {
       position: sticky; top: 0; background: rgba(8, 13, 24, 0.96); backdrop-filter: blur(16px); z-index: 5; font-size: 12px;
       text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); text-align: left; padding: 14px; border-bottom: 1px solid rgba(255,255,255,0.08);
     }
     tbody td { padding: 14px; border-bottom: 1px solid rgba(255,255,255,0.05); vertical-align: top; font-size: 14px; }
     tbody tr:hover { background: rgba(255,255,255,0.03); }
-    .title-cell { display: grid; grid-template-columns: 144px 1fr; gap: 16px; min-width: 520px; }
+    .result-table-wrap th:nth-child(1), .result-table-wrap td:nth-child(1) { width: 42%; }
+    .result-table-wrap th:nth-child(2), .result-table-wrap td:nth-child(2) { width: 9%; }
+    .result-table-wrap th:nth-child(3), .result-table-wrap td:nth-child(3) { width: 13%; }
+    .result-table-wrap th:nth-child(4), .result-table-wrap td:nth-child(4) { width: 14%; }
+    .result-table-wrap th:nth-child(5), .result-table-wrap td:nth-child(5) { width: 8%; }
+    .result-table-wrap th:nth-child(6), .result-table-wrap td:nth-child(6) { width: 6%; }
+    .result-table-wrap th:nth-child(7), .result-table-wrap td:nth-child(7) { width: 8%; }
+    .title-cell { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 14px; min-width: 0; align-items: start; }
     .poster {
-      width: 144px; height: 216px; border-radius: 18px; background: rgba(255,255,255,0.05); background-size: cover; background-position: center;
+      width: 112px; height: 168px; border-radius: 18px; background: rgba(255,255,255,0.05); background-size: cover; background-position: center;
       border: 1px solid rgba(255,255,255,0.07); box-shadow: 0 12px 30px rgba(0,0,0,0.24); transition: transform 0.16s ease;
       flex: 0 0 auto;
     }
     .poster:hover { transform: scale(1.03); }
     .movie-title { font-weight: 800; font-size: 18px; margin-bottom: 8px; }
+    .movie-copy { min-width: 0; }
+    .movie-desc { color: #c7d4ee; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
     .movie-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
     .tiny { font-size: 12px; color: var(--muted); line-height: 1.5; }
     .tiny.strong { color: #d9e7ff; }
-    .service-tags, .genre-tags, .type-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .service-tags, .genre-tags, .type-tags { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
     .tag {
       display: inline-flex; align-items: center; padding: 5px 9px; border-radius: 999px; font-size: 12px;
       background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08);
@@ -158,13 +168,10 @@
     .status-bar { margin-top: 14px; padding: 12px 14px; border-radius: 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); color: var(--muted); font-size: 13px; line-height: 1.55; }
     .loading { display: none; margin-top: 14px; padding: 14px; border-radius: 16px; background: rgba(122,162,255,0.12); border: 1px solid rgba(122,162,255,0.26); color: #dfe8ff; }
     .loading.active { display: block; }
+    .loading.busy::before { content: ""; display: inline-block; width: 14px; height: 14px; margin-right: 10px; border-radius: 999px; border: 2px solid rgba(255,255,255,0.28); border-top-color: rgba(255,255,255,0.96); animation: spin 0.9s linear infinite; vertical-align: -2px; }
+    .loading.success { background: rgba(119,224,203,0.14); border-color: rgba(119,224,203,0.32); color: #e7fff8; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     .empty { padding: 36px; text-align: center; color: var(--muted); }
-    .coverage { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 10px; margin-top: 12px; }
-    .coverage-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 12px; }
-    .coverage-card .name { font-weight: 800; }
-    .coverage-card .meta { color: var(--muted); font-size: 12px; margin-top: 4px; line-height: 1.45; }
-    .coverage-card.partial { border-color: rgba(255,207,109,0.25); }
-    .coverage-card.error { border-color: rgba(255,140,140,0.28); }
     .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
     .result-cards { display: none; gap: 14px; }
     .result-card {
@@ -298,7 +305,6 @@
       .active-summary { flex-wrap: nowrap; overflow: auto; padding-bottom: 4px; }
       .result-table-wrap { display: none; }
       .result-cards { display: grid; }
-      .coverage { grid-template-columns: 1fr; }
       .mobile-action-bar { display: grid; }
     }
 
@@ -313,7 +319,6 @@
       .result-card .poster { width: 96px; height: 144px; border-radius: 14px; }
       .result-card .movie-title { font-size: 18px; }
       .metric-grid { grid-template-columns: 1fr 1fr; }
-      .coverage-card { padding: 10px; }
       .mobile-action-bar {
         left: 10px;
         right: 10px;
@@ -350,13 +355,14 @@
         <h1>Daniel's Movie Tool</h1>
         <p class="sub">Browse current movies and TV shows across Netflix, Hulu, HBO Max, Disney+, Paramount+, Peacock, Prime Video, Apple TV+, and other major streaming services. Filter by multiple genres, content type, IMDb rating and vote ranges, year, runtime, and provider. The catalog refreshes automatically every two days, and manual refresh is password-protected.</p>
         <div class="hero-actions">
-          <button class="primary" id="refreshBtn">↻ Admin refresh now</button>
+          <button class="primary" id="refreshBtn">↻ Publish refresh</button>
           <button class="ghost" id="clearBtn">Reset filters</button>
           <button class="ghost desktop-only" id="exportBtn">Export filtered CSV</button>
           <button class="ghost mobile-only" id="openFiltersBtn">Filters</button>
           <a class="btn ghost desktop-only" href="#results">Jump to results</a>
         </div>
-        <div class="loading" id="loadingBox">Admin refresh in progress. You are still seeing the latest published catalog while a newer snapshot is prepared.</div>
+        <div class="loading busy active" id="loadingBox">Opening the latest published snapshot…</div>
+        <div class="loading" id="noticeBox"></div>
       </div>
       <div class="hero-card stats">
         <div class="stat"><div class="label">Titles loaded</div><div class="value" id="statTitles">—</div></div>
@@ -383,6 +389,11 @@
         </div>
         <div class="field">
           <label>Services</label>
+          <div class="chip-row">
+            <button type="button" class="chip" id="servicesDefaultBtn">Netflix + Hulu</button>
+            <button type="button" class="chip" id="servicesClearBtn">Clear all</button>
+            <button type="button" class="chip" id="servicesAllBtn">All services</button>
+          </div>
           <div class="chip-grid" id="serviceChips"></div>
         </div>
         <div class="field">
@@ -440,7 +451,6 @@
           <button class="primary" id="mobileApplyBtn">Done</button>
           <button class="ghost" id="mobileExportBtn">Export CSV</button>
         </div>
-        <div class="status-bar" id="notesBox">Loading catalog metadata…</div>
       </aside>
 
       <main>
@@ -450,9 +460,9 @@
             <div class="results-meta" id="resultsMeta">No data loaded yet.</div>
           </div>
         </div>
+        <div class="results-main-stack">
         <div class="toolbar">
           <div class="active-summary pill-scroll" id="activeSummary"></div>
-          <div class="results-meta mono desktop-only" id="coverageSummary"></div>
         </div>
         <div class="result-cards" id="resultsCards"></div>
         <div class="result-table-wrap desktop-only">
@@ -466,30 +476,29 @@
                 <th>IMDb</th>
                 <th>Year</th>
                 <th>Runtime / Seasons</th>
-                <th>Links</th>
               </tr>
             </thead>
             <tbody id="resultsBody">
-              <tr><td colspan="8" class="empty">Loading…</td></tr>
+              <tr><td colspan="7" class="empty">Loading…</td></tr>
             </tbody>
           </table>
         </div>
-        <div class="coverage" id="coverageGrid"></div>
+        </div>
       </main>
     </section>
   </div>
 
   <div class="mobile-action-bar mobile-only" id="mobileActionBar">
     <button class="ghost" id="mobileFiltersBtn">Filters</button>
-    <button class="ghost" id="mobileRefreshBtn">Admin refresh</button>
+    <button class="ghost" id="mobileRefreshBtn">Publish refresh</button>
     <div class="count-pill" id="mobileCount">0 matches</div>
   </div>
 
 
   <div class="modal-shell" id="refreshModal" hidden>
     <div class="modal-card">
-      <h3>Admin refresh</h3>
-      <p>The catalog refreshes automatically every two days. To run a manual refresh right now, enter the refresh password.</p>
+      <h3>Publish refresh</h3>
+      <p>This triggers the GitHub workflow that rebuilds the published snapshot for all future visitors. Enter the refresh password to continue.</p>
       <input id="refreshPasswordInput" type="password" placeholder="Enter refresh password" autocomplete="current-password" />
       <div class="modal-error" id="refreshPasswordError"></div>
       <div class="hero-actions" style="margin-top: 14px;">
@@ -504,12 +513,13 @@
       catalog: null,
       items: [],
       filtered: [],
-      selectedServices: new Set(["netflix", "hulu", "max", "disney", "paramount", "peacock", "prime", "apple", "starz", "amc", "mgm", "criterion", "crunchyroll", "tubi"]),
+      selectedServices: new Set(["netflix", "hulu"]),
       selectedGenres: new Set(),
       selectedType: 'both',
       genreMode: 'any',
       pollTimer: null,
       currentTaskId: null,
+      renderToken: 0,
     };
 
     const SERVICE_LABELS = {
@@ -566,6 +576,23 @@
     function servicePill(key) {
       return `<span class="tag">${SERVICE_LABELS[key] || key}</span>`;
     }
+    function showLoading(message, persistent = false) {
+      const box = q('#loadingBox');
+      box.textContent = message;
+      box.className = 'loading active busy';
+      box.dataset.persistent = persistent ? '1' : '0';
+    }
+    function hideLoading() {
+      const box = q('#loadingBox');
+      if (box.dataset.persistent === '1') return;
+      box.className = 'loading';
+      box.textContent = '';
+    }
+    function showNotice(message, href = '') {
+      const box = q('#noticeBox');
+      box.className = 'loading active success';
+      box.innerHTML = href ? `${escapeHtml(message)} <a class="mini-link" href="${escapeHtml(href)}" target="_blank" rel="noreferrer">Open workflow</a>` : escapeHtml(message);
+    }
     function currentGenreOptions() {
       const labels = new Set();
       (state.catalog?.items || []).forEach(item => (item.genre_labels || []).forEach(g => labels.add(g)));
@@ -601,7 +628,6 @@
       qa('[data-service]').forEach(btn => btn.addEventListener('click', () => {
         const key = btn.dataset.service;
         if (state.selectedServices.has(key)) state.selectedServices.delete(key); else state.selectedServices.add(key);
-        if (!state.selectedServices.size) state.selectedServices.add(key);
         renderServiceChips();
         applyFilters();
       }));
@@ -644,7 +670,8 @@
       const minRuntime = q('#minRuntime').value;
       const maxRuntime = q('#maxRuntime').value;
       if (state.selectedType !== 'both') parts.push(TYPE_LABELS[state.selectedType]);
-      if (state.selectedServices.size !== Object.keys(SERVICE_LABELS).length) parts.push(...[...state.selectedServices].map(s => SERVICE_LABELS[s]));
+      if (!state.selectedServices.size) parts.push('No services selected');
+      else if (state.selectedServices.size !== Object.keys(SERVICE_LABELS).length) parts.push(...[...state.selectedServices].map(s => SERVICE_LABELS[s]));
       if (text) parts.push(`Search: ${text}`);
       if (state.selectedGenres.size) parts.push(`${state.genreMode === 'all' ? 'All genres' : 'Any genre'}: ${[...state.selectedGenres].join(', ')}`);
       if (minRating) parts.push(`IMDb ≥ ${minRating}`);
@@ -672,6 +699,7 @@
       state.filtered = state.catalog.items.filter(item => {
         const serviceKeys = Object.keys(item.service_links || {});
         if (!typeMatches(item)) return false;
+        if (!state.selectedServices.size) return false;
         if (!serviceKeys.some(k => state.selectedServices.has(k))) return false;
         if (text) {
           const hay = `${item.title || ''} ${item.description || ''}`.toLowerCase();
@@ -790,34 +818,52 @@
         </article>
       `;
     }
-    function renderResults() {
-      const body = q('#resultsBody');
-      const cards = q('#resultsCards');
-      if (!state.filtered.length) {
-        body.innerHTML = `<tr><td colspan="8" class="empty">No titles match the current filters.</td></tr>`;
-        cards.innerHTML = `<div class="empty">No titles match the current filters.</div>`;
-        q('#resultsMeta').textContent = 'Showing 0 titles.';
-        q('#mobileCount').textContent = '0 matches';
-        return;
-      }
-      const visible = state.filtered.slice(0, 500);
-      body.innerHTML = visible.map(item => buildItemHtml(item, false)).join('');
-      cards.innerHTML = visible.map(item => buildItemHtml(item, true)).join('');
-      const capped = state.filtered.length > 500 ? `Showing first 500 of ${fmtNumber(state.filtered.length)} matches.` : `Showing ${fmtNumber(state.filtered.length)} matches.`;
-      q('#resultsMeta').textContent = capped;
-      q('#mobileCount').textContent = `${fmtNumber(state.filtered.length)} match${state.filtered.length === 1 ? '' : 'es'}`;
+    
+function renderResults() {
+  const body = q('#resultsBody');
+  const cards = q('#resultsCards');
+  const token = ++state.renderToken;
+  if (!state.filtered.length) {
+    body.innerHTML = `<tr><td colspan="7" class="empty">No titles match the current filters.</td></tr>`;
+    cards.innerHTML = `<div class="empty">No titles match the current filters.</div>`;
+    q('#resultsMeta').textContent = 'Showing 0 titles.';
+    q('#mobileCount').textContent = '0 matches';
+    hideLoading();
+    return;
+  }
+  const visible = state.filtered.slice(0, 500);
+  body.innerHTML = '';
+  cards.innerHTML = '';
+  const totalMatches = state.filtered.length;
+  const capped = totalMatches > 500 ? `Showing first 500 of ${fmtNumber(totalMatches)} matches.` : `Showing ${fmtNumber(totalMatches)} matches.`;
+  q('#resultsMeta').textContent = capped;
+  q('#mobileCount').textContent = `${fmtNumber(totalMatches)} match${totalMatches === 1 ? '' : 'es'}`;
+  showLoading(`Rendering ${fmtNumber(visible.length)} titles…`);
+  let cursor = 0;
+  const chunkSize = isMobile() ? 18 : 26;
+  const pump = () => {
+    if (token !== state.renderToken) return;
+    const end = Math.min(cursor + chunkSize, visible.length);
+    const desktop = [];
+    const mobile = [];
+    for (; cursor < end; cursor += 1) {
+      const item = visible[cursor];
+      desktop.push(buildItemHtml(item, false));
+      mobile.push(buildItemHtml(item, true));
     }
-    function renderCoverage() {
-      const grid = q('#coverageGrid');
-      const coverage = state.catalog?.coverage || {};
-      const cards = Object.entries(coverage).map(([key, info]) => {
-        const cls = info.error ? 'coverage-card error' : (info.partial ? 'coverage-card partial' : 'coverage-card');
-        const note = info.error ? `Error: ${escapeHtml(info.error)}` : `${fmtNumber(info.titles)} titles · ${fmtNumber(info.pages)} page calls${info.partial ? ' · endpoint cap reached' : ''}`;
-        return `<div class="${cls}"><div class="name">${escapeHtml(info.label || SERVICE_LABELS[key] || key)}</div><div class="meta">${note}</div></div>`;
-      });
-      grid.innerHTML = cards.join('');
-      const partialCount = Object.values(coverage).filter(v => v.partial).length;
-      q('#coverageSummary').textContent = partialCount ? `${partialCount} service${partialCount > 1 ? 's' : ''} hit the public endpoint cap.` : `Coverage refreshed for ${Object.keys(coverage).length} services.`;
+    body.insertAdjacentHTML('beforeend', desktop.join(''));
+    cards.insertAdjacentHTML('beforeend', mobile.join(''));
+    if (cursor < visible.length) {
+      showLoading(`Rendering ${fmtNumber(cursor)} of ${fmtNumber(visible.length)} titles…`);
+      requestAnimationFrame(pump);
+    } else {
+      hideLoading();
+    }
+  };
+  requestAnimationFrame(pump);
+}
+function renderCoverage() {
+      return;
     }
     function renderStats() {
       const total = state.catalog?.items?.length || 0;
@@ -827,50 +873,22 @@
       q('#statVisible').textContent = fmtNumber(state.filtered.length);
       q('#statMix').textContent = `${fmtNumber(visibleMovies)} M / ${fmtNumber(visibleShows)} TV`;
       q('#statRefresh').textContent = state.catalog?.generated_at ? fmtDate(state.catalog.generated_at) : 'Pending';
-      const notesList = ['The published catalog snapshot is refreshed by GitHub Actions every 2 days.', 'Manual refresh requires the admin password.', ...(state.catalog?.notes || [])];
-      if (state.catalog?.next_auto_refresh_at) notesList.push(`Target age for the next published snapshot: ${fmtDate(state.catalog.next_auto_refresh_at)}`);
-      if (state.catalog?.last_attempted_at) notesList.push(`Last refresh attempt: ${fmtDate(state.catalog.last_attempted_at)}`);
-      if (state.catalog?.snapshot_file) notesList.push(`Published snapshot file: ${state.catalog.snapshot_file}`);
-      q('#notesBox').innerHTML = notesList.map(n => `• ${escapeHtml(n)}`).join('<br>') || 'No notes yet.';
     }
     async function loadCatalog() {
-      const res = await fetch('/api/catalog');
+      showLoading('Opening the latest published snapshot…');
+      const res = await fetch('/api/catalog', { cache: 'no-store' });
       const data = await res.json();
       state.catalog = data;
       state.items = data.items || [];
       renderGenreControls();
       renderCoverage();
       applyFilters();
-      const running = data.running_task;
-      if (running && running.id) {
-        q('#loadingBox').classList.add('active');
-        if (state.currentTaskId !== running.id) {
-          state.currentTaskId = running.id;
-          if (state.pollTimer) clearTimeout(state.pollTimer);
-          pollTask(running.id);
-        }
-      } else if (state.currentTaskId === null) {
-        q('#loadingBox').classList.remove('active');
-      }
     }
-    async function pollTask(taskId) {
-      const res = await fetch(`/api/task/${taskId}`);
-      const data = await res.json();
-      if (data.status === 'running') {
-        state.currentTaskId = taskId;
-        q('#loadingBox').classList.add('active');
-        state.pollTimer = setTimeout(() => pollTask(taskId), 1500);
-        return;
-      }
-      state.currentTaskId = null;
-      q('#loadingBox').classList.remove('active');
-      if (data.status === 'done') {
-        await loadCatalog();
-      } else if (data.status === 'error') {
-        alert(`Refresh failed: ${data.error || 'Unknown error'}\n\nIf this mentions name resolution, your Mac could not reach the live catalog service. Please check your internet connection and try Refresh again.`);
-      }
-    }
-    function openRefreshModal() {
+    
+async function pollTask(taskId) {
+  return;
+}
+function openRefreshModal() {
       q('#refreshPasswordError').textContent = '';
       q('#refreshPasswordInput').value = '';
       q('#refreshModal').hidden = false;
@@ -895,11 +913,7 @@
         return;
       }
       closeRefreshModal();
-      q('#loadingBox').classList.add('active');
-      if (data.task_id) {
-        state.currentTaskId = data.task_id;
-        pollTask(data.task_id);
-      }
+      showNotice('GitHub refresh started. The published snapshot will update for future visitors after the workflow finishes and Render redeploys.', data.actions_url || state.catalog?.github_actions_url || '');
     }
     function startRefresh() {
       openRefreshModal();
@@ -942,7 +956,7 @@
       q('#minRuntime').value = '';
       q('#maxRuntime').value = '';
       q('#sortSelect').value = 'imdb_desc';
-      state.selectedServices = new Set(Object.keys(SERVICE_LABELS));
+      state.selectedServices = new Set(["netflix", "hulu"]);
       state.selectedGenres = new Set();
       state.selectedType = 'both';
       state.genreMode = 'any';
@@ -959,6 +973,9 @@
       q('#refreshBtn').addEventListener('click', startRefresh);
       q('#mobileRefreshBtn').addEventListener('click', startRefresh);
       q('#clearBtn').addEventListener('click', clearFilters);
+      q('#servicesDefaultBtn').addEventListener('click', () => { state.selectedServices = new Set(['netflix', 'hulu']); renderServiceChips(); applyFilters(); });
+      q('#servicesClearBtn').addEventListener('click', () => { state.selectedServices = new Set(); renderServiceChips(); applyFilters(); });
+      q('#servicesAllBtn').addEventListener('click', () => { state.selectedServices = new Set(Object.keys(SERVICE_LABELS)); renderServiceChips(); applyFilters(); });
       q('#exportBtn').addEventListener('click', exportCsv);
       q('#mobileExportBtn').addEventListener('click', exportCsv);
       q('#genreAnyBtn').addEventListener('click', () => { state.genreMode = 'any'; renderGenreControls(); applyFilters(); });

@@ -18,7 +18,7 @@ How snapshot publishing works on the free Render plan
 - A GitHub Actions workflow refreshes that snapshot on a schedule and commits the updated JSON back into the repo.
 - Render redeploys from the updated repo, so the newest committed snapshot becomes the live catalog.
 - The website no longer refreshes the whole catalog on page load.
-- The in-app admin refresh button still works, but the durable source of truth is catalog_snapshot.json in GitHub.
+- The website now triggers the GitHub Actions workflow for manual refreshes, so a password-protected refresh updates the published snapshot for future visitors instead of rebuilding only the live Render instance.
 
 Recommended first-run setup
 1. Push this package to GitHub.
@@ -30,3 +30,9 @@ Notes
 - The workflow file is in .github/workflows/refresh_catalog.yml.
 - Generated runtime files in ./data are ignored; the committed snapshot lives at the repo root.
 - Manual refresh password: GetTheNewStuff
+
+Additional Render settings for the website refresh button
+- Set GITHUB_REFRESH_REPO to your GitHub owner/repo value, for example danielmromero/MovieTool.
+- Set GITHUB_REFRESH_WORKFLOW to refresh_catalog.yml unless you renamed the workflow file.
+- Set GITHUB_REFRESH_REF to your default branch, usually main.
+- Set GITHUB_REFRESH_TOKEN to a GitHub token that is allowed to dispatch the workflow.
