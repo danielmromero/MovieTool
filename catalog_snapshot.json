@@ -1,0 +1,13 @@
+{
+  "generated_at": null,
+  "coverage": {},
+  "items": [],
+  "notes": [
+    "This committed snapshot will be filled by the GitHub Actions workflow or by an admin refresh.",
+    "Until then, the site will show an empty catalog instead of trying to rebuild everything on page load."
+  ],
+  "last_error": null,
+  "last_attempted_at": null,
+  "source": "JustWatch unofficial GraphQL endpoint",
+  "region": "US"
+}
