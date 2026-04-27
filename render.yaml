@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: daniels-movie-tool
+    runtime: python
+    rootDir: .
+    plan: free
+    buildCommand: echo "No build step needed"
+    startCommand: python server.py
+    healthCheckPath: /health
