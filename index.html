@@ -131,13 +131,13 @@
     }
     tbody td { padding: 14px; border-bottom: 1px solid rgba(255,255,255,0.05); vertical-align: top; font-size: 14px; }
     tbody tr:hover { background: rgba(255,255,255,0.03); }
-    .result-table-wrap th:nth-child(1), .result-table-wrap td:nth-child(1) { width: 42%; }
+    .result-table-wrap th:nth-child(1), .result-table-wrap td:nth-child(1) { width: 48%; }
     .result-table-wrap th:nth-child(2), .result-table-wrap td:nth-child(2) { width: 9%; }
-    .result-table-wrap th:nth-child(3), .result-table-wrap td:nth-child(3) { width: 13%; }
-    .result-table-wrap th:nth-child(4), .result-table-wrap td:nth-child(4) { width: 14%; }
+    .result-table-wrap th:nth-child(3), .result-table-wrap td:nth-child(3) { width: 12%; }
+    .result-table-wrap th:nth-child(4), .result-table-wrap td:nth-child(4) { width: 13%; }
     .result-table-wrap th:nth-child(5), .result-table-wrap td:nth-child(5) { width: 8%; }
-    .result-table-wrap th:nth-child(6), .result-table-wrap td:nth-child(6) { width: 6%; }
-    .result-table-wrap th:nth-child(7), .result-table-wrap td:nth-child(7) { width: 8%; }
+    .result-table-wrap th:nth-child(6), .result-table-wrap td:nth-child(6) { width: 5%; }
+    .result-table-wrap th:nth-child(7), .result-table-wrap td:nth-child(7) { width: 5%; }
     .title-cell { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 14px; min-width: 0; align-items: start; }
     .poster {
       width: 112px; height: 168px; border-radius: 18px; background: rgba(255,255,255,0.05); background-size: cover; background-position: center;
@@ -306,6 +306,10 @@
       .result-table-wrap { display: none; }
       .result-cards { display: grid; }
       .mobile-action-bar { display: grid; }
+      .sidebar { position: fixed; inset: 0; z-index: 50; width: 100%; max-height: none; overflow: auto; transform: translateY(100%); transition: transform 0.22s ease; border-radius: 0; padding: 20px 18px calc(120px + var(--safe-bottom)); }
+      .sidebar.open { transform: translateY(0); }
+      .sidebar-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+      .sidebar-close { width:44px; height:44px; border-radius:999px; background: rgba(255,255,255,0.06); color: var(--text); border:1px solid rgba(255,255,255,0.08); }
     }
 
     @media (max-width: 640px) {
@@ -331,6 +335,14 @@
       }
     }
 
+
+      .hero-top { flex-direction: column; align-items: stretch; }
+      .lang-toggle { align-self: flex-start; }
+      .detail-top { grid-template-columns: 1fr; }
+      .detail-modal-card { padding: 18px; border-radius: 22px; }
+      .detail-metric-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .detail-desc { font-size: 16px; }
+
     .modal-shell[hidden] { display: none !important; }
     .modal-shell {
       position: fixed; inset: 0; z-index: 70; display: grid; place-items: center;
@@ -343,6 +355,49 @@
     .modal-card h3 { margin: 0 0 8px; font-size: 24px; }
     .modal-card p { margin: 0 0 14px; color: var(--muted); line-height: 1.55; }
     .modal-error { min-height: 20px; margin-top: 10px; color: #ffb4b4; font-size: 13px; }
+
+    .hero-top { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:10px; }
+    .lang-toggle {
+      display:inline-flex; gap:4px; padding:4px; border-radius:999px;
+      background: rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08);
+      align-items:center;
+    }
+    .lang-btn {
+      min-width: 56px; padding: 8px 12px; border-radius: 999px; background: transparent; color: var(--muted);
+      font-weight: 800; letter-spacing: 0.02em;
+    }
+    .lang-btn.active { background: linear-gradient(135deg, rgba(122,162,255,0.26), rgba(119,224,203,0.26)); color: var(--text); border: 1px solid rgba(255,255,255,0.12); }
+    .clickable-row { cursor: pointer; }
+    .clickable-row:hover .movie-title, .result-card.clickable-row:hover .movie-title { color: #ffffff; }
+    .detail-modal-shell[hidden] { display:none !important; }
+    .detail-modal-shell {
+      position: fixed; inset: 0; z-index: 75; display: grid; place-items: center;
+      padding: 18px; background: rgba(3, 8, 16, 0.8); backdrop-filter: blur(16px);
+    }
+    .detail-modal-card {
+      width: min(1100px, 100%); max-height: min(92vh, 980px); overflow: auto;
+      background: rgba(10, 18, 35, 0.98); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 28px; box-shadow: var(--shadow); padding: 26px;
+    }
+    .detail-top { display:grid; grid-template-columns: 240px 1fr; gap: 24px; align-items:start; }
+    .detail-poster {
+      width: 100%; aspect-ratio: 2 / 3; border-radius: 24px; background: rgba(255,255,255,0.05);
+      background-size: cover; background-position: center; border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 14px 34px rgba(0,0,0,0.28);
+    }
+    .detail-header { display:flex; justify-content:space-between; gap:16px; align-items:flex-start; }
+    .detail-title { margin: 0; font-size: clamp(28px, 4vw, 46px); line-height: 1.02; letter-spacing: -0.03em; }
+    .detail-close { width: 46px; height: 46px; border-radius: 999px; background: rgba(255,255,255,0.06); color: var(--text); border: 1px solid rgba(255,255,255,0.08); }
+    .detail-desc { margin: 14px 0 18px; color: #d9e7ff; line-height: 1.7; font-size: 17px; }
+    .detail-metric-grid { display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; margin: 18px 0; }
+    .detail-metric { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); border-radius: 18px; padding: 14px; }
+    .detail-metric .label { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; }
+    .detail-metric .value { margin-top: 6px; font-weight: 800; font-size: 22px; }
+    .detail-section { margin-top: 18px; }
+    .detail-section h4 { margin: 0 0 10px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+    .detail-links { display:flex; flex-wrap:wrap; gap:10px; }
+    .detail-links .mini-link { padding: 10px 12px; font-size: 13px; }
+    .detail-submeta { display:flex; flex-wrap:wrap; gap: 8px; margin-top: 12px; }
   </style>
 </head>
 <body>
@@ -351,44 +406,50 @@
   <div class="shell">
     <section class="hero">
       <div class="hero-card">
-        <div class="eyebrow">Live streaming title database</div>
-        <h1>Daniel's Movie Tool</h1>
-        <p class="sub">Browse current movies and TV shows across Netflix, Hulu, HBO Max, Disney+, Paramount+, Peacock, Prime Video, Apple TV+, and other major streaming services. Filter by multiple genres, content type, IMDb rating and vote ranges, year, runtime, and provider. The catalog refreshes automatically every two days, and manual refresh is password-protected.</p>
+        <div class="hero-top">
+          <div class="eyebrow" id="eyebrowLabel">Live streaming title database</div>
+          <div class="lang-toggle" role="group" aria-label="Language">
+            <button type="button" class="lang-btn" id="langEnBtn">EN</button>
+            <button type="button" class="lang-btn" id="langEsBtn">ES</button>
+          </div>
+        </div>
+        <h1 id="appTitle">Daniel's Movie Tool</h1>
+        <p class="sub" id="heroSub">Browse current movies and TV shows across Netflix, Hulu, HBO Max, Disney+, Paramount+, Peacock, Prime Video, Apple TV+, and other major streaming services. Filter by multiple genres, content type, IMDb rating and vote ranges, year, runtime, and provider. The catalog refreshes automatically every two days, and manual refresh is password-protected.</p>
         <div class="hero-actions">
           <button class="primary" id="refreshBtn">↻ Admin Catalog Refresh</button>
           <button class="ghost" id="clearBtn">Reset filters</button>
           <button class="ghost desktop-only" id="exportBtn">Export filtered CSV</button>
           <button class="ghost mobile-only" id="openFiltersBtn">Filters</button>
-          <a class="btn ghost desktop-only" href="#results">Jump to results</a>
+          <a class="btn ghost desktop-only" href="#results" id="jumpToResultsBtn">Jump to results</a>
         </div>
         <div class="loading busy active" id="loadingBox">Opening the latest published snapshot…</div>
         <div class="loading" id="noticeBox"></div>
       </div>
       <div class="hero-card stats">
-        <div class="stat"><div class="label">Titles loaded</div><div class="value" id="statTitles">—</div></div>
-        <div class="stat"><div class="label">Visible after filters</div><div class="value" id="statVisible">—</div></div>
-        <div class="stat"><div class="label">Visible mix</div><div class="value" id="statMix">—</div></div>
-        <div class="stat"><div class="label">Last refresh</div><div class="value" id="statRefresh">—</div></div>
+        <div class="stat"><div class="label" id="statTitlesLabel">Titles loaded</div><div class="value" id="statTitles">—</div></div>
+        <div class="stat"><div class="label" id="statVisibleLabel">Visible after filters</div><div class="value" id="statVisible">—</div></div>
+        <div class="stat"><div class="label" id="statMixLabel">Visible mix</div><div class="value" id="statMix">—</div></div>
+        <div class="stat"><div class="label" id="statRefreshLabel">Last refresh</div><div class="value" id="statRefresh">—</div></div>
       </div>
     </section>
 
     <section class="layout">
       <aside class="panel sidebar" id="sidebarPanel" aria-label="Filters">
         <div class="sidebar-header mobile-only">
-          <h2>Filters</h2>
+          <h2 id="filtersTitleMobile">Filters</h2>
           <button type="button" class="sidebar-close" id="closeFiltersBtn" aria-label="Close filters">✕</button>
         </div>
-        <div class="section-title"><h2>Filters</h2><span class="hint">Updates instantly</span></div>
+        <div class="section-title"><h2 id="filtersTitleDesktop">Filters</h2><span class="hint" id="filtersHint">Updates instantly</span></div>
         <div class="field">
-          <label for="searchInput">Search title or description</label>
+          <label for="searchInput" id="searchLabel">Search title or description</label>
           <input id="searchInput" type="text" placeholder="Search titles" />
         </div>
         <div class="field">
-          <label>Content type</label>
+          <label id="contentTypeLabel">Content type</label>
           <div class="chip-grid" id="typeChips"></div>
         </div>
         <div class="field">
-          <label>Services</label>
+          <label id="servicesLabel">Services</label>
           <div class="chip-row">
             <button type="button" class="chip" id="servicesClearBtn">Clear all</button>
             <button type="button" class="chip" id="servicesAllBtn">All services</button>
@@ -396,7 +457,7 @@
           <div class="chip-grid" id="serviceChips"></div>
         </div>
         <div class="field">
-          <label>Genres</label>
+          <label id="genresLabel">Genres</label>
           <div class="chip-row">
             <button type="button" class="chip" id="genreAnyBtn">Match any</button>
             <button type="button" class="chip" id="genreAllBtn">Match all</button>
@@ -405,7 +466,7 @@
           <div class="genre-box"><div class="chip-grid" id="genreChips"></div></div>
         </div>
         <div class="field">
-          <label>IMDb filters</label>
+          <label id="imdbFiltersLabel">IMDb filters</label>
           <div class="stack-4">
             <input id="minRating" type="number" step="0.1" min="0" max="10" placeholder="Min rating" />
             <input id="maxRating" type="number" step="0.1" min="0" max="10" placeholder="Max rating" />
@@ -414,21 +475,21 @@
           </div>
         </div>
         <div class="field">
-          <label>Year range</label>
+          <label id="yearRangeLabel">Year range</label>
           <div class="range-row">
             <input id="minYear" type="number" min="1900" step="1" placeholder="From" />
             <input id="maxYear" type="number" min="1900" step="1" placeholder="To" />
           </div>
         </div>
         <div class="field">
-          <label>Runtime minutes</label>
+          <label id="runtimeLabel">Runtime minutes</label>
           <div class="range-row">
             <input id="minRuntime" type="number" min="0" step="1" placeholder="Min" />
             <input id="maxRuntime" type="number" min="0" step="1" placeholder="Max" />
           </div>
         </div>
         <div class="field">
-          <label>Sorting</label>
+          <label id="sortingLabel">Sorting</label>
           <select id="sortSelect">
             <option value="imdb_desc">IMDb rating ↓</option>
             <option value="imdb_asc">IMDb rating ↑</option>
@@ -443,7 +504,7 @@
           </select>
         </div>
         <div class="field">
-          <label>Helpful presets</label>
+          <label id="presetsLabel">Helpful presets</label>
           <div class="chip-grid" id="presetChips"></div>
         </div>
         <div class="hero-actions mobile-only" style="margin-top:6px;">
@@ -455,7 +516,7 @@
       <main>
         <div class="results-head" id="results">
           <div>
-            <h2>Browse current titles</h2>
+            <h2 id="browseTitle">Browse current titles</h2>
             <div class="results-meta" id="resultsMeta">No data loaded yet.</div>
           </div>
         </div>
@@ -468,13 +529,13 @@
           <table>
             <thead>
               <tr>
-                <th>Title</th>
-                <th>Type</th>
-                <th>Services</th>
-                <th>Genres</th>
-                <th>IMDb</th>
-                <th>Year</th>
-                <th>Runtime / Seasons</th>
+                <th id="thTitle">Title</th>
+                <th id="thType">Type</th>
+                <th id="thServices">Services</th>
+                <th id="thGenres">Genres</th>
+                <th id="thImdb">IMDb</th>
+                <th id="thYear">Year</th>
+                <th id="thRuntime">Runtime / Seasons</th>
               </tr>
             </thead>
             <tbody id="resultsBody">
@@ -489,20 +550,49 @@
 
   <div class="mobile-action-bar mobile-only" id="mobileActionBar">
     <button class="ghost" id="mobileFiltersBtn">Filters</button>
-    <button class="ghost" id="mobileRefreshBtn">Publish refresh</button>
+    <button class="ghost" id="mobileRefreshBtn">Admin Catalog Refresh</button>
     <div class="count-pill" id="mobileCount">0 matches</div>
   </div>
 
 
   <div class="modal-shell" id="refreshModal" hidden>
     <div class="modal-card">
-      <h3>Publish refresh</h3>
-      <p>This triggers the GitHub workflow that rebuilds the published snapshot for all future visitors. Enter the refresh password to continue.</p>
+      <h3 id="refreshModalTitle">Admin Catalog Refresh</h3>
+      <p id="refreshModalText">Enter the refresh password to continue.</p>
       <input id="refreshPasswordInput" type="password" placeholder="Enter refresh password" autocomplete="current-password" />
       <div class="modal-error" id="refreshPasswordError"></div>
       <div class="hero-actions" style="margin-top: 14px;">
         <button class="ghost" id="cancelRefreshModalBtn">Cancel</button>
         <button class="primary" id="submitRefreshModalBtn">Start refresh</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="detail-modal-shell" id="detailModal" hidden>
+    <div class="detail-modal-card">
+      <div class="detail-header">
+        <h3 class="detail-title" id="detailTitle">Title</h3>
+        <button class="detail-close" id="detailCloseBtn" aria-label="Close">✕</button>
+      </div>
+      <div class="detail-top">
+        <div class="detail-poster" id="detailPoster"></div>
+        <div>
+          <div class="detail-submeta" id="detailMetaChips"></div>
+          <p class="detail-desc" id="detailDescription"></p>
+          <div class="detail-metric-grid" id="detailMetrics"></div>
+          <div class="detail-section">
+            <h4 id="detailServicesTitle">Available on</h4>
+            <div class="service-tags" id="detailServices"></div>
+          </div>
+          <div class="detail-section">
+            <h4 id="detailGenresTitle">Genres</h4>
+            <div class="genre-tags" id="detailGenres"></div>
+          </div>
+          <div class="detail-section">
+            <h4 id="detailLinksTitle">Open links</h4>
+            <div class="detail-links" id="detailLinks"></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -522,6 +612,333 @@
       renderToken: 0,
     };
 
+    const browserLang = (navigator.language || '').toLowerCase().startsWith('es') ? 'es' : 'en';
+    const storedLang = (() => { try { return localStorage.getItem('danielsMovieToolLang'); } catch (e) { return null; } })();
+    state.lang = storedLang || browserLang;
+    state.detailItem = null;
+
+    const TRANSLATIONS = {
+      en: {
+        eyebrow: 'Live streaming title database',
+        heroSub: 'Browse current movies and TV shows across Netflix, Hulu, HBO Max, Disney+, Paramount+, Peacock, Prime Video, Apple TV+, and other major streaming services. Filter by multiple genres, content type, IMDb rating and vote ranges, year, runtime, and provider. The catalog refreshes automatically every two days, and manual refresh is password-protected.',
+        adminRefresh: '↻ Admin Catalog Refresh',
+        resetFilters: 'Reset filters',
+        exportCsv: 'Export filtered CSV',
+        filters: 'Filters',
+        jumpToResults: 'Jump to results',
+        titlesLoaded: 'Titles loaded',
+        visibleAfterFilters: 'Visible after filters',
+        visibleMix: 'Visible mix',
+        lastRefresh: 'Last refresh',
+        updatesInstantly: 'Updates instantly',
+        searchLabel: 'Search title or description',
+        searchPlaceholder: 'Search titles',
+        contentType: 'Content type',
+        services: 'Services',
+        clearAll: 'Clear all',
+        allServices: 'All services',
+        genres: 'Genres',
+        matchAny: 'Match any',
+        matchAll: 'Match all',
+        clearGenres: 'Clear genres',
+        imdbFilters: 'IMDb filters',
+        minRating: 'Min rating',
+        maxRating: 'Max rating',
+        minVotes: 'Min votes',
+        maxVotes: 'Max votes',
+        yearRange: 'Year range',
+        from: 'From',
+        to: 'To',
+        runtimeMinutes: 'Runtime minutes',
+        min: 'Min',
+        max: 'Max',
+        sorting: 'Sorting',
+        helpfulPresets: 'Helpful presets',
+        done: 'Done',
+        browseCurrentTitles: 'Browse current titles',
+        noDataLoadedYet: 'No data loaded yet.',
+        title: 'Title',
+        type: 'Type',
+        imdb: 'IMDb',
+        year: 'Year',
+        runtimeSeasons: 'Runtime / Seasons',
+        mobileMatches: '{count} matches',
+        zeroMatches: '0 matches',
+        noTitlesMatch: 'No titles match the current filters.',
+        showingZero: 'Showing 0 titles.',
+        showingMatches: 'Showing {count} matches.',
+        showingFirstMatches: 'Showing first 500 of {count} matches.',
+        openingSnapshot: 'Opening the latest published snapshot…',
+        publishedSnapshotLoading: 'Published snapshot: {publishedAt}. Loading {titleCount}…',
+        publishedTitles: '{count} published titles',
+        publishedSnapshot: 'published snapshot',
+        pending: 'Pending',
+        never: 'Never',
+        renderingTitles: 'Rendering {count} titles…',
+        renderingProgress: 'Rendering {current} of {total} titles…',
+        refreshSoon: 'A catalog refresh is coming soon',
+        refreshModalTitle: 'Admin Catalog Refresh',
+        refreshModalText: 'Enter the refresh password to continue.',
+        refreshPasswordPlaceholder: 'Enter refresh password',
+        cancel: 'Cancel',
+        startRefresh: 'Start refresh',
+        refreshError: 'Refresh could not be started.',
+        moviesPlusTv: 'Movies + TV',
+        movies: 'Movies',
+        tvShows: 'TV Shows',
+        imdb5000: 'IMDb 5000+ votes',
+        romcoms: 'Rom-coms',
+        obscureTitles: 'Obscure titles',
+        badButKnown: 'Bad but known',
+        underSeenGems: 'Under-seen gems',
+        topTvShows: 'Top TV shows',
+        onMultipleServices: 'On multiple services',
+        searchSummary: 'Search: {value}',
+        noServicesSelected: 'No services selected',
+        anyGenreSummary: 'Any genre: {value}',
+        allGenresSummary: 'All genres: {value}',
+        ratingMinSummary: 'IMDb ≥ {value}',
+        ratingMaxSummary: 'IMDb ≤ {value}',
+        votesMinSummary: 'Votes ≥ {value}',
+        votesMaxSummary: 'Votes ≤ {value}',
+        yearSummary: 'Year: {from} to {to}',
+        runtimeSummary: 'Runtime: {from} to {to} min',
+        untitled: 'Untitled',
+        noDescription: 'No description available.',
+        movie: 'Movie',
+        tvShow: 'TV Show',
+        servicesCount: '{count} services',
+        jwPopularity: 'JW popularity #{count}',
+        votes: 'votes',
+        discovery: 'Discovery {value}',
+        runtimeOnly: '{count} min',
+        seasons: '{count} seasons',
+        season: '1 season',
+        watchOn: 'Watch on {service}',
+        availableOn: 'Available on',
+        openLinks: 'Open links',
+        popularity: 'Popularity',
+        close: 'Close',
+      },
+      es: {
+        eyebrow: 'Base de datos de streaming en vivo',
+        heroSub: 'Explora películas y series actuales en Netflix, Hulu, HBO Max, Disney+, Paramount+, Peacock, Prime Video, Apple TV+ y otros servicios principales. Filtra por múltiples géneros, tipo de contenido, rangos de calificación y votos de IMDb, año, duración y servicio. El catálogo se actualiza automáticamente cada dos días y la actualización manual está protegida con contraseña.',
+        adminRefresh: '↻ Actualización del catálogo',
+        resetFilters: 'Restablecer filtros',
+        exportCsv: 'Exportar CSV filtrado',
+        filters: 'Filtros',
+        jumpToResults: 'Ir a resultados',
+        titlesLoaded: 'Títulos cargados',
+        visibleAfterFilters: 'Visibles con filtros',
+        visibleMix: 'Mezcla visible',
+        lastRefresh: 'Última actualización',
+        updatesInstantly: 'Se actualiza al instante',
+        searchLabel: 'Buscar por título o descripción',
+        searchPlaceholder: 'Buscar títulos',
+        contentType: 'Tipo de contenido',
+        services: 'Servicios',
+        clearAll: 'Borrar todo',
+        allServices: 'Todos los servicios',
+        genres: 'Géneros',
+        matchAny: 'Coincide con alguno',
+        matchAll: 'Coincide con todos',
+        clearGenres: 'Borrar géneros',
+        imdbFilters: 'Filtros de IMDb',
+        minRating: 'Calificación mín.',
+        maxRating: 'Calificación máx.',
+        minVotes: 'Votos mín.',
+        maxVotes: 'Votos máx.',
+        yearRange: 'Rango de años',
+        from: 'Desde',
+        to: 'Hasta',
+        runtimeMinutes: 'Duración en minutos',
+        min: 'Mín.',
+        max: 'Máx.',
+        sorting: 'Ordenar por',
+        helpfulPresets: 'Atajos útiles',
+        done: 'Listo',
+        browseCurrentTitles: 'Explorar títulos actuales',
+        noDataLoadedYet: 'Todavía no hay datos cargados.',
+        title: 'Título',
+        type: 'Tipo',
+        imdb: 'IMDb',
+        year: 'Año',
+        runtimeSeasons: 'Duración / Temporadas',
+        mobileMatches: '{count} coincidencias',
+        zeroMatches: '0 coincidencias',
+        noTitlesMatch: 'Ningún título coincide con los filtros actuales.',
+        showingZero: 'Mostrando 0 títulos.',
+        showingMatches: 'Mostrando {count} coincidencias.',
+        showingFirstMatches: 'Mostrando las primeras 500 de {count} coincidencias.',
+        openingSnapshot: 'Abriendo la última versión publicada…',
+        publishedSnapshotLoading: 'Versión publicada: {publishedAt}. Cargando {titleCount}…',
+        publishedTitles: '{count} títulos publicados',
+        publishedSnapshot: 'versión publicada',
+        pending: 'Pendiente',
+        never: 'Nunca',
+        renderingTitles: 'Mostrando {count} títulos…',
+        renderingProgress: 'Mostrando {current} de {total} títulos…',
+        refreshSoon: 'Pronto llegará una actualización del catálogo',
+        refreshModalTitle: 'Actualización del catálogo',
+        refreshModalText: 'Ingresa la contraseña para continuar.',
+        refreshPasswordPlaceholder: 'Ingresa la contraseña',
+        cancel: 'Cancelar',
+        startRefresh: 'Iniciar actualización',
+        refreshError: 'No se pudo iniciar la actualización.',
+        moviesPlusTv: 'Películas + Series',
+        movies: 'Películas',
+        tvShows: 'Series',
+        imdb5000: 'IMDb 5000+ votos',
+        romcoms: 'Comedias románticas',
+        obscureTitles: 'Títulos poco conocidos',
+        badButKnown: 'Malas pero conocidas',
+        underSeenGems: 'Joyas poco vistas',
+        topTvShows: 'Mejores series',
+        onMultipleServices: 'En varios servicios',
+        searchSummary: 'Búsqueda: {value}',
+        noServicesSelected: 'Ningún servicio seleccionado',
+        anyGenreSummary: 'Cualquier género: {value}',
+        allGenresSummary: 'Todos los géneros: {value}',
+        ratingMinSummary: 'IMDb ≥ {value}',
+        ratingMaxSummary: 'IMDb ≤ {value}',
+        votesMinSummary: 'Votos ≥ {value}',
+        votesMaxSummary: 'Votos ≤ {value}',
+        yearSummary: 'Año: {from} a {to}',
+        runtimeSummary: 'Duración: {from} a {to} min',
+        untitled: 'Sin título',
+        noDescription: 'No hay descripción disponible.',
+        movie: 'Película',
+        tvShow: 'Serie',
+        servicesCount: '{count} servicios',
+        jwPopularity: 'Popularidad JW #{count}',
+        votes: 'votos',
+        discovery: 'Descubrimiento {value}',
+        runtimeOnly: '{count} min',
+        seasons: '{count} temporadas',
+        season: '1 temporada',
+        watchOn: 'Ver en {service}',
+        availableOn: 'Disponible en',
+        openLinks: 'Abrir enlaces',
+        popularity: 'Popularidad',
+        close: 'Cerrar',
+      }
+    };
+
+    const SORT_OPTIONS = [
+      ['imdb_desc', {en:'IMDb rating ↓', es:'IMDb ↓'}],
+      ['imdb_asc', {en:'IMDb rating ↑', es:'IMDb ↑'}],
+      ['votes_desc', {en:'IMDb votes ↓', es:'Votos IMDb ↓'}],
+      ['votes_asc', {en:'IMDb votes ↑', es:'Votos IMDb ↑'}],
+      ['popularity_asc', {en:'JustWatch popularity ↑', es:'Popularidad JustWatch ↑'}],
+      ['discovery_desc', {en:'Discovery score ↓', es:'Puntaje de descubrimiento ↓'}],
+      ['year_desc', {en:'Year ↓', es:'Año ↓'}],
+      ['runtime_desc', {en:'Runtime ↓', es:'Duración ↓'}],
+      ['service_desc', {en:'Services ↓', es:'Servicios ↓'}],
+      ['title_asc', {en:'Title A–Z', es:'Título A–Z'}],
+    ];
+
+    function t(key, vars = {}) {
+      const lang = state.lang === 'es' ? 'es' : 'en';
+      let template = TRANSLATIONS[lang][key] ?? TRANSLATIONS.en[key] ?? key;
+      for (const [name, value] of Object.entries(vars)) template = template.replaceAll(`{${name}}`, value);
+      return template;
+    }
+    function updateLangButtons() {
+      q('#langEnBtn').classList.toggle('active', state.lang === 'en');
+      q('#langEsBtn').classList.toggle('active', state.lang === 'es');
+      q('#langEnBtn').setAttribute('aria-pressed', state.lang === 'en' ? 'true' : 'false');
+      q('#langEsBtn').setAttribute('aria-pressed', state.lang === 'es' ? 'true' : 'false');
+    }
+    function setLanguage(lang) {
+      state.lang = lang === 'es' ? 'es' : 'en';
+      try { localStorage.setItem('danielsMovieToolLang', state.lang); } catch (e) {}
+      document.documentElement.lang = state.lang;
+      updateLangButtons();
+      applyTranslations();
+      renderTypeChips();
+      renderServiceChips();
+      renderGenreControls();
+      renderPresetChips();
+      renderSortOptions();
+      activeFiltersSummary();
+      renderStats();
+      renderResults();
+      if (state.detailItem) renderDetailModal();
+    }
+    function renderSortOptions() {
+      const select = q('#sortSelect');
+      const current = select.value || 'imdb_desc';
+      select.innerHTML = SORT_OPTIONS.map(([value, labels]) => `<option value="${value}">${state.lang === 'es' ? labels.es : labels.en}</option>`).join('');
+      select.value = current;
+    }
+    function applyTranslations() {
+      q('#eyebrowLabel').textContent = t('eyebrow');
+      q('#heroSub').textContent = t('heroSub');
+      q('#refreshBtn').textContent = t('adminRefresh');
+      q('#clearBtn').textContent = t('resetFilters');
+      q('#exportBtn').textContent = t('exportCsv');
+      q('#openFiltersBtn').textContent = t('filters');
+      q('#jumpToResultsBtn').textContent = t('jumpToResults');
+      q('#statTitlesLabel').textContent = t('titlesLoaded');
+      q('#statVisibleLabel').textContent = t('visibleAfterFilters');
+      q('#statMixLabel').textContent = t('visibleMix');
+      q('#statRefreshLabel').textContent = t('lastRefresh');
+      q('#filtersTitleMobile').textContent = t('filters');
+      q('#filtersTitleDesktop').textContent = t('filters');
+      q('#closeFiltersBtn').setAttribute('aria-label', t('close'));
+      q('#filtersHint').textContent = t('updatesInstantly');
+      q('#searchLabel').textContent = t('searchLabel');
+      q('#searchInput').placeholder = t('searchPlaceholder');
+      q('#contentTypeLabel').textContent = t('contentType');
+      q('#servicesLabel').textContent = t('services');
+      q('#servicesClearBtn').textContent = t('clearAll');
+      q('#servicesAllBtn').textContent = t('allServices');
+      q('#genresLabel').textContent = t('genres');
+      q('#genreAnyBtn').textContent = t('matchAny');
+      q('#genreAllBtn').textContent = t('matchAll');
+      q('#clearGenresBtn').textContent = t('clearGenres');
+      q('#imdbFiltersLabel').textContent = t('imdbFilters');
+      q('#minRating').placeholder = t('minRating');
+      q('#maxRating').placeholder = t('maxRating');
+      q('#minVotes').placeholder = t('minVotes');
+      q('#maxVotes').placeholder = t('maxVotes');
+      q('#yearRangeLabel').textContent = t('yearRange');
+      q('#minYear').placeholder = t('from');
+      q('#maxYear').placeholder = t('to');
+      q('#runtimeLabel').textContent = t('runtimeMinutes');
+      q('#minRuntime').placeholder = t('min');
+      q('#maxRuntime').placeholder = t('max');
+      q('#sortingLabel').textContent = t('sorting');
+      q('#presetsLabel').textContent = t('helpfulPresets');
+      q('#mobileApplyBtn').textContent = t('done');
+      q('#mobileExportBtn').textContent = t('exportCsv');
+      q('#browseTitle').textContent = t('browseCurrentTitles');
+      if (!state.catalog) q('#resultsMeta').textContent = t('noDataLoadedYet');
+      q('#thTitle').textContent = t('title');
+      q('#thType').textContent = t('type');
+      q('#thServices').textContent = t('services');
+      q('#thGenres').textContent = t('genres');
+      q('#thImdb').textContent = t('imdb');
+      q('#thYear').textContent = t('year');
+      q('#thRuntime').textContent = t('runtimeSeasons');
+      q('#mobileFiltersBtn').textContent = t('filters');
+      q('#mobileRefreshBtn').textContent = t('adminRefresh').replace(/^↻\s*/, '');
+      q('#refreshModalTitle').textContent = t('refreshModalTitle');
+      q('#refreshModalText').textContent = t('refreshModalText');
+      q('#refreshPasswordInput').placeholder = t('refreshPasswordPlaceholder');
+      q('#cancelRefreshModalBtn').textContent = t('cancel');
+      q('#submitRefreshModalBtn').textContent = t('startRefresh');
+      q('#detailCloseBtn').setAttribute('aria-label', t('close'));
+      q('#detailServicesTitle').textContent = t('availableOn');
+      q('#detailGenresTitle').textContent = t('genres');
+      q('#detailLinksTitle').textContent = t('openLinks');
+      if (!state.filtered.length) q('#mobileCount').textContent = t('zeroMatches');
+    }
+
+    function typeLabelForItem(item) {
+      if (item?.type_label) return item.type_label;
+      return item?.object_type === 'SHOW' ? t('tvShow') : t('movie');
+    }
     const SERVICE_LABELS = {
       netflix: 'Netflix',
       hulu: 'Hulu',
@@ -540,21 +957,21 @@
     };
 
     const TYPE_LABELS = {
-      both: 'Movies + TV',
-      movie: 'Movies',
-      show: 'TV Shows',
+      both: () => t('moviesPlusTv'),
+      movie: () => t('movies'),
+      show: () => t('tvShows'),
     };
 
     const PINNED_GENRES = ['Romantic Comedy', 'Horror', 'Action', 'Comedy', 'Drama', 'Thriller', 'Crime', 'Sci-Fi', 'Animation', 'Documentary', 'Romance'];
 
     const PRESETS = [
-      { key: 'top5000', label: 'IMDb 5000+ votes', apply: () => { q('#minVotes').value = 5000; q('#sortSelect').value = 'imdb_desc'; } },
-      { key: 'romcom', label: 'Rom-coms', apply: () => { state.selectedGenres = new Set(['Romantic Comedy']); state.genreMode = 'any'; q('#sortSelect').value = 'imdb_desc'; renderGenreControls(); } },
-      { key: 'obscure', label: 'Obscure titles', apply: () => { q('#maxVotes').value = 5000; q('#sortSelect').value = 'votes_asc'; } },
-      { key: 'badfun', label: 'Bad but known', apply: () => { q('#minVotes').value = 5000; q('#maxRating').value = 5.5; q('#sortSelect').value = 'imdb_asc'; } },
-      { key: 'underseen', label: 'Under-seen gems', apply: () => { q('#minRating').value = 7.0; q('#maxVotes').value = 25000; q('#sortSelect').value = 'imdb_desc'; } },
-      { key: 'topshows', label: 'Top TV shows', apply: () => { state.selectedType = 'show'; q('#minVotes').value = 5000; q('#sortSelect').value = 'imdb_desc'; renderTypeChips(); } },
-      { key: 'multiservice', label: 'On multiple services', apply: () => { q('#sortSelect').value = 'service_desc'; } },
+      { key: 'top5000', labelKey: 'imdb5000', apply: () => { q('#minVotes').value = 5000; q('#sortSelect').value = 'imdb_desc'; } },
+      { key: 'romcom', labelKey: 'romcoms', apply: () => { state.selectedGenres = new Set(['Romantic Comedy']); state.genreMode = 'any'; q('#sortSelect').value = 'imdb_desc'; renderGenreControls(); } },
+      { key: 'obscure', labelKey: 'obscureTitles', apply: () => { q('#maxVotes').value = 5000; q('#sortSelect').value = 'votes_asc'; } },
+      { key: 'badfun', labelKey: 'badButKnown', apply: () => { q('#minVotes').value = 5000; q('#maxRating').value = 5.5; q('#sortSelect').value = 'imdb_asc'; } },
+      { key: 'underseen', labelKey: 'underSeenGems', apply: () => { q('#minRating').value = 7.0; q('#maxVotes').value = 25000; q('#sortSelect').value = 'imdb_desc'; } },
+      { key: 'topshows', labelKey: 'topTvShows', apply: () => { state.selectedType = 'show'; q('#minVotes').value = 5000; q('#sortSelect').value = 'imdb_desc'; renderTypeChips(); } },
+      { key: 'multiservice', labelKey: 'onMultipleServices', apply: () => { q('#sortSelect').value = 'service_desc'; } },
     ];
 
     function q(sel) { return document.querySelector(sel); }
@@ -565,13 +982,13 @@
     }
     function fmtNumber(n) {
       if (n === null || n === undefined || n === '') return '—';
-      return new Intl.NumberFormat().format(n);
+      return new Intl.NumberFormat(state.lang === 'es' ? 'es-ES' : 'en-US').format(n);
     }
     function fmtDate(iso) {
-      if (!iso) return 'Never';
+      if (!iso) return t('never');
       const d = new Date(iso);
       if (Number.isNaN(d.getTime())) return iso;
-      return d.toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' });
+      return d.toLocaleString(state.lang === 'es' ? 'es-ES' : 'en-US', { dateStyle: 'medium', timeStyle: 'short' });
     }
     function servicePill(key) {
       return `<span class="tag">${SERVICE_LABELS[key] || key}</span>`;
@@ -607,12 +1024,13 @@
     }
     function setDrawer(open) {
       if (!isMobile()) return;
+      q('#sidebarPanel').classList.toggle('open', Boolean(open));
       document.body.classList.toggle('drawer-open', Boolean(open));
     }
     function renderTypeChips() {
       const wrap = q('#typeChips');
-      wrap.innerHTML = Object.entries(TYPE_LABELS).map(([key, label]) => `
-        <button type="button" class="chip ${state.selectedType === key ? 'active' : ''}" data-type="${key}">${label}</button>
+      wrap.innerHTML = Object.entries(TYPE_LABELS).map(([key, labelFn]) => `
+        <button type="button" class="chip ${state.selectedType === key ? 'active' : ''}" data-type="${key}">${labelFn()}</button>
       `).join('');
       qa('[data-type]').forEach(btn => btn.addEventListener('click', () => {
         state.selectedType = btn.dataset.type;
@@ -652,7 +1070,7 @@
     }
     function renderPresetChips() {
       const wrap = q('#presetChips');
-      wrap.innerHTML = PRESETS.map(p => `<button type="button" class="chip" data-preset="${p.key}">${p.label}</button>`).join('');
+      wrap.innerHTML = PRESETS.map(p => `<button type="button" class="chip" data-preset="${p.key}">${t(p.labelKey)}</button>`).join('');
       qa('[data-preset]').forEach(btn => btn.addEventListener('click', () => {
         PRESETS.find(p => p.key === btn.dataset.preset)?.apply();
         applyFilters();
@@ -669,17 +1087,17 @@
       const maxYear = q('#maxYear').value;
       const minRuntime = q('#minRuntime').value;
       const maxRuntime = q('#maxRuntime').value;
-      if (state.selectedType !== 'both') parts.push(TYPE_LABELS[state.selectedType]);
-      if (!state.selectedServices.size) parts.push('No services selected');
+      if (state.selectedType !== 'both') parts.push(TYPE_LABELS[state.selectedType]());
+      if (!state.selectedServices.size) parts.push(t('noServicesSelected'));
       else if (state.selectedServices.size !== Object.keys(SERVICE_LABELS).length) parts.push(...[...state.selectedServices].map(s => SERVICE_LABELS[s]));
-      if (text) parts.push(`Search: ${text}`);
-      if (state.selectedGenres.size) parts.push(`${state.genreMode === 'all' ? 'All genres' : 'Any genre'}: ${[...state.selectedGenres].join(', ')}`);
-      if (minRating) parts.push(`IMDb ≥ ${minRating}`);
-      if (maxRating) parts.push(`IMDb ≤ ${maxRating}`);
-      if (minVotes) parts.push(`Votes ≥ ${fmtNumber(minVotes)}`);
-      if (maxVotes) parts.push(`Votes ≤ ${fmtNumber(maxVotes)}`);
-      if (minYear || maxYear) parts.push(`Year: ${minYear || '—'} to ${maxYear || '—'}`);
-      if (minRuntime || maxRuntime) parts.push(`Runtime: ${minRuntime || '—'} to ${maxRuntime || '—'} min`);
+      if (text) parts.push(t('searchSummary', { value: text }));
+      if (state.selectedGenres.size) parts.push(state.genreMode === 'all' ? t('allGenresSummary', { value: [...state.selectedGenres].join(', ') }) : t('anyGenreSummary', { value: [...state.selectedGenres].join(', ') }));
+      if (minRating) parts.push(t('ratingMinSummary', { value: minRating }));
+      if (maxRating) parts.push(t('ratingMaxSummary', { value: maxRating }));
+      if (minVotes) parts.push(t('votesMinSummary', { value: fmtNumber(minVotes) }));
+      if (maxVotes) parts.push(t('votesMaxSummary', { value: fmtNumber(maxVotes) }));
+      if (minYear || maxYear) parts.push(t('yearSummary', { from: minYear || '—', to: maxYear || '—' }));
+      if (minRuntime || maxRuntime) parts.push(t('runtimeSummary', { from: minRuntime || '—', to: maxRuntime || '—' }));
       q('#activeSummary').innerHTML = parts.map(p => `<span class="tag">${escapeHtml(p)}</span>`).join('');
     }
     function applyFilters() {
@@ -743,75 +1161,75 @@
       const serviceKeys = Object.keys(item.service_links || {}).filter(k => state.selectedServices.has(k));
       const serviceTags = serviceKeys.map(servicePill).join('');
       const genreTags = (item.genre_labels || []).slice(0, mobile ? 8 : 6).map(g => `<span class="tag">${escapeHtml(g)}</span>`).join('');
-      const watchLinks = serviceKeys.slice(0, mobile ? 5 : 3).map(k => `<a class="mini-link" target="_blank" rel="noopener" href="${item.service_links[k]}">Watch on ${SERVICE_LABELS[k]}</a>`).join('');
+      const watchLinks = serviceKeys.slice(0, mobile ? 5 : 3).map(k => `<a class="mini-link" target="_blank" rel="noopener" href="${item.service_links[k]}">${t('watchOn', { service: SERVICE_LABELS[k] })}</a>`).join('');
       const imdbLink = item.imdb_url ? `<a class="mini-link" target="_blank" rel="noopener" href="${item.imdb_url}">IMDb</a>` : '';
       const jwLink = item.justwatch_url ? `<a class="mini-link" target="_blank" rel="noopener" href="${item.justwatch_url}">JustWatch</a>` : '';
       const posterStyle = item.poster_url ? `style="background-image:url('${item.poster_url.replace(/'/g, "%27")}')"` : '';
       const typeClass = item.object_type === 'SHOW' ? 'type-show' : 'type-movie';
       const runtimeOrSeasons = item.object_type === 'SHOW'
-        ? (item.total_season_count ? `${item.total_season_count} season${item.total_season_count === 1 ? '' : 's'}` : 'TV Show')
-        : (item.runtime_minutes ? `${item.runtime_minutes} min` : '—');
+        ? (item.total_season_count ? (item.total_season_count === 1 ? t('season') : t('seasons', { count: item.total_season_count })) : t('tvShow'))
+        : (item.runtime_minutes ? t('runtimeOnly', { count: item.runtime_minutes }) : '—');
       const imdb = item.imdb_score ? item.imdb_score.toFixed(1) : '—';
       if (!mobile) {
         return `
-          <tr>
+          <tr class="clickable-row" data-detail-index="${item.__idx}">
             <td>
               <div class="title-cell">
                 <div class="poster" ${posterStyle}></div>
-                <div>
-                  <div class="movie-title">${escapeHtml(item.title || 'Untitled')}</div>
+                <div class="movie-copy">
+                  <div class="movie-title">${escapeHtml(item.title || t('untitled'))}</div>
                   <div class="movie-meta">
-                    <span class="tag ${typeClass}">${escapeHtml(item.type_label || (item.object_type === 'SHOW' ? 'TV Show' : 'Movie'))}</span>
+                    <span class="tag ${typeClass}">${escapeHtml(typeLabelForItem(item))}</span>
                     ${item.age_certification ? `<span class="tag">${escapeHtml(item.age_certification)}</span>` : ''}
-                    ${item.service_count > 1 ? `<span class="tag">${item.service_count} services</span>` : ''}
-                    ${item.chart_rank ? `<span class="tag">JW popularity #${item.chart_rank}</span>` : ''}
+                    ${item.service_count > 1 ? `<span class="tag">${t('servicesCount', { count: item.service_count })}</span>` : ''}
+                    ${item.chart_rank ? `<span class="tag">${t('jwPopularity', { count: item.chart_rank })}</span>` : ''}
                   </div>
-                  <div class="tiny">${escapeHtml(item.description || 'No description available.')}</div>
+                  <div class="tiny">${escapeHtml(item.description || t('noDescription'))}</div>
+                  <div class="link-row" style="margin-top:10px;">${watchLinks}${imdbLink}${jwLink}</div>
                 </div>
               </div>
             </td>
-            <td><div class="type-tags"><span class="tag ${typeClass}">${escapeHtml(item.type_label || (item.object_type === 'SHOW' ? 'TV Show' : 'Movie'))}</span></div></td>
+            <td><div class="type-tags"><span class="tag ${typeClass}">${escapeHtml(typeLabelForItem(item))}</span></div></td>
             <td><div class="service-tags">${serviceTags}</div></td>
             <td><div class="genre-tags">${genreTags || '<span class="tiny">—</span>'}</div></td>
             <td>
               <div class="rating-stack">
                 <div class="score">${imdb}</div>
-                <div class="tiny">${fmtNumber(item.imdb_votes)} votes</div>
-                ${item.discovery_score ? `<div class="tiny strong">Discovery ${item.discovery_score}</div>` : ''}
+                <div class="tiny">${fmtNumber(item.imdb_votes)} ${t('votes')}</div>
+                ${item.discovery_score ? `<div class="tiny strong">${t('discovery', { value: item.discovery_score })}</div>` : ''}
               </div>
             </td>
             <td>${item.year || '—'}</td>
             <td>${runtimeOrSeasons}</td>
-            <td><div class="link-row">${watchLinks}${imdbLink}${jwLink}</div></td>
           </tr>
         `;
       }
       return `
-        <article class="result-card">
+        <article class="result-card clickable-row" data-detail-index="${item.__idx}">
           <div class="result-card-head">
             <div class="poster" ${posterStyle}></div>
             <div>
-              <div class="movie-title">${escapeHtml(item.title || 'Untitled')}</div>
+              <div class="movie-title">${escapeHtml(item.title || t('untitled'))}</div>
               <div class="movie-meta">
-                <span class="tag ${typeClass}">${escapeHtml(item.type_label || (item.object_type === 'SHOW' ? 'TV Show' : 'Movie'))}</span>
+                <span class="tag ${typeClass}">${escapeHtml(typeLabelForItem(item))}</span>
                 ${item.age_certification ? `<span class="tag">${escapeHtml(item.age_certification)}</span>` : ''}
-                ${item.service_count > 1 ? `<span class="tag">${item.service_count} services</span>` : ''}
+                ${item.service_count > 1 ? `<span class="tag">${t('servicesCount', { count: item.service_count })}</span>` : ''}
               </div>
-              <div class="tiny">${escapeHtml(item.description || 'No description available.')}</div>
+              <div class="tiny">${escapeHtml(item.description || t('noDescription'))}</div>
             </div>
           </div>
           <div class="metric-grid">
-            <div class="metric"><div class="label">IMDb</div><div class="value">${imdb} · ${fmtNumber(item.imdb_votes)} votes</div></div>
-            <div class="metric"><div class="label">Year</div><div class="value">${item.year || '—'}</div></div>
-            <div class="metric"><div class="label">Runtime / Seasons</div><div class="value">${runtimeOrSeasons}</div></div>
-            <div class="metric"><div class="label">Popularity</div><div class="value">${item.chart_rank ? `JW #${item.chart_rank}` : '—'}</div></div>
+            <div class="metric"><div class="label">${t('imdb')}</div><div class="value">${imdb} · ${fmtNumber(item.imdb_votes)} ${t('votes')}</div></div>
+            <div class="metric"><div class="label">${t('year')}</div><div class="value">${item.year || '—'}</div></div>
+            <div class="metric"><div class="label">${t('runtimeSeasons')}</div><div class="value">${runtimeOrSeasons}</div></div>
+            <div class="metric"><div class="label">${t('popularity')}</div><div class="value">${item.chart_rank ? `JW #${item.chart_rank}` : '—'}</div></div>
           </div>
           <div>
-            <div class="tiny" style="margin-bottom:8px;">Available on</div>
+            <div class="tiny" style="margin-bottom:8px;">${t('availableOn')}</div>
             <div class="service-tags">${serviceTags || '<span class="tiny">—</span>'}</div>
           </div>
           <div>
-            <div class="tiny" style="margin-bottom:8px;">Genres</div>
+            <div class="tiny" style="margin-bottom:8px;">${t('genres')}</div>
             <div class="genre-tags">${genreTags || '<span class="tiny">—</span>'}</div>
           </div>
           <div class="link-row">${watchLinks}${imdbLink}${jwLink}</div>
@@ -824,21 +1242,22 @@ function renderResults() {
   const cards = q('#resultsCards');
   const token = ++state.renderToken;
   if (!state.filtered.length) {
-    body.innerHTML = `<tr><td colspan="7" class="empty">No titles match the current filters.</td></tr>`;
-    cards.innerHTML = `<div class="empty">No titles match the current filters.</div>`;
-    q('#resultsMeta').textContent = 'Showing 0 titles.';
-    q('#mobileCount').textContent = '0 matches';
+    body.innerHTML = `<tr><td colspan="7" class="empty">${t('noTitlesMatch')}</td></tr>`;
+    cards.innerHTML = `<div class="empty">${t('noTitlesMatch')}</div>`;
+    q('#resultsMeta').textContent = t('showingZero');
+    q('#mobileCount').textContent = t('zeroMatches');
     hideLoading();
+    bindDetailHandlers();
     return;
   }
   const visible = state.filtered.slice(0, 500);
   body.innerHTML = '';
   cards.innerHTML = '';
   const totalMatches = state.filtered.length;
-  const capped = totalMatches > 500 ? `Showing first 500 of ${fmtNumber(totalMatches)} matches.` : `Showing ${fmtNumber(totalMatches)} matches.`;
+  const capped = totalMatches > 500 ? t('showingFirstMatches', { count: fmtNumber(totalMatches) }) : t('showingMatches', { count: fmtNumber(totalMatches) });
   q('#resultsMeta').textContent = capped;
-  q('#mobileCount').textContent = `${fmtNumber(totalMatches)} match${totalMatches === 1 ? '' : 'es'}`;
-  showLoading(`Rendering ${fmtNumber(visible.length)} titles…`);
+  q('#mobileCount').textContent = t('mobileMatches', { count: fmtNumber(totalMatches) });
+  showLoading(t('renderingTitles', { count: fmtNumber(visible.length) }));
   let cursor = 0;
   const chunkSize = isMobile() ? 18 : 26;
   const pump = () => {
@@ -854,14 +1273,70 @@ function renderResults() {
     body.insertAdjacentHTML('beforeend', desktop.join(''));
     cards.insertAdjacentHTML('beforeend', mobile.join(''));
     if (cursor < visible.length) {
-      showLoading(`Rendering ${fmtNumber(cursor)} of ${fmtNumber(visible.length)} titles…`);
+      showLoading(t('renderingProgress', { current: fmtNumber(cursor), total: fmtNumber(visible.length) }));
       requestAnimationFrame(pump);
     } else {
       hideLoading();
+      bindDetailHandlers();
     }
   };
   requestAnimationFrame(pump);
 }
+function bindDetailHandlers() {
+  qa('[data-detail-index]').forEach(el => {
+    el.querySelectorAll('a').forEach(link => link.addEventListener('click', (event) => event.stopPropagation()));
+    el.addEventListener('click', () => {
+      const idx = Number(el.dataset.detailIndex);
+      const item = state.filtered.find(entry => entry.__idx === idx);
+      if (item) openDetailModal(item);
+    });
+  });
+}
+function openDetailModal(item) {
+  state.detailItem = item;
+  renderDetailModal();
+  q('#detailModal').hidden = false;
+  document.body.classList.add('drawer-open');
+}
+function closeDetailModal() {
+  state.detailItem = null;
+  q('#detailModal').hidden = true;
+  if (!q('#refreshModal').hidden || (isMobile() && q('#sidebarPanel').classList.contains('open'))) return;
+  document.body.classList.remove('drawer-open');
+}
+function renderDetailModal() {
+  const item = state.detailItem;
+  if (!item) return;
+  q('#detailTitle').textContent = item.title || t('untitled');
+  q('#detailPoster').style.backgroundImage = item.poster_url ? `url('${String(item.poster_url).replace(/'/g, "%27")}')` : 'none';
+  q('#detailDescription').textContent = item.description || t('noDescription');
+  const typeClass = item.object_type === 'SHOW' ? 'type-show' : 'type-movie';
+  const runtimeOrSeasons = item.object_type === 'SHOW'
+    ? (item.total_season_count ? (item.total_season_count === 1 ? t('season') : t('seasons', { count: item.total_season_count })) : t('tvShow'))
+    : (item.runtime_minutes ? t('runtimeOnly', { count: item.runtime_minutes }) : '—');
+  q('#detailMetaChips').innerHTML = `
+    <span class="tag ${typeClass}">${escapeHtml(typeLabelForItem(item))}</span>
+    ${item.year ? `<span class="tag">${escapeHtml(String(item.year))}</span>` : ''}
+    ${item.age_certification ? `<span class="tag">${escapeHtml(item.age_certification)}</span>` : ''}
+    ${item.chart_rank ? `<span class="tag">${t('jwPopularity', { count: item.chart_rank })}</span>` : ''}
+    ${item.service_count > 1 ? `<span class="tag">${t('servicesCount', { count: item.service_count })}</span>` : ''}
+  `;
+  q('#detailMetrics').innerHTML = [
+    [t('imdb'), `${item.imdb_score ? item.imdb_score.toFixed(1) : '—'}${item.imdb_votes ? ` · ${fmtNumber(item.imdb_votes)} ${t('votes')}` : ''}`],
+    [t('year'), item.year || '—'],
+    [t('runtimeSeasons'), runtimeOrSeasons],
+    [t('popularity'), item.chart_rank ? `JW #${item.chart_rank}` : '—'],
+  ].map(([label, value]) => `<div class="detail-metric"><div class="label">${escapeHtml(label)}</div><div class="value">${escapeHtml(String(value))}</div></div>`).join('');
+  const allServiceKeys = Object.keys(item.service_links || {});
+  q('#detailServices').innerHTML = allServiceKeys.length ? allServiceKeys.map(k => `<span class="tag">${escapeHtml(SERVICE_LABELS[k] || k)}</span>`).join('') : '<span class="tiny">—</span>';
+  q('#detailGenres').innerHTML = (item.genre_labels || []).length ? item.genre_labels.map(g => `<span class="tag">${escapeHtml(g)}</span>`).join('') : '<span class="tiny">—</span>';
+  const links = [];
+  allServiceKeys.forEach(k => links.push(`<a class="mini-link" target="_blank" rel="noopener" href="${item.service_links[k]}">${t('watchOn', { service: SERVICE_LABELS[k] || k })}</a>`));
+  if (item.imdb_url) links.push(`<a class="mini-link" target="_blank" rel="noopener" href="${item.imdb_url}">IMDb</a>`);
+  if (item.justwatch_url) links.push(`<a class="mini-link" target="_blank" rel="noopener" href="${item.justwatch_url}">JustWatch</a>`);
+  q('#detailLinks').innerHTML = links.join('');
+}
+
 function renderCoverage() {
       return;
     }
@@ -876,9 +1351,9 @@ function renderCoverage() {
       const data = await res.json();
       state.catalogMeta = data;
       renderStats();
-      const publishedAt = data.generated_at ? fmtDate(data.generated_at) : 'Pending';
-      const titleCount = data.item_count ? `${fmtNumber(data.item_count)} published titles` : 'published snapshot';
-      showLoading(`Published snapshot: ${publishedAt}. Loading ${titleCount}…`);
+      const publishedAt = data.generated_at ? fmtDate(data.generated_at) : t('pending');
+      const titleCount = data.item_count ? t('publishedTitles', { count: fmtNumber(data.item_count) }) : t('publishedSnapshot');
+      showLoading(t('publishedSnapshotLoading', { publishedAt, titleCount }));
     }
     function renderStats() {
       const total = state.catalog?.items?.length || 0;
@@ -891,15 +1366,16 @@ function renderCoverage() {
       q('#statVisible').textContent = fmtNumber(state.filtered.length);
       q('#statMix').textContent = total ? `${fmtNumber(visibleMovies)} M / ${fmtNumber(visibleShows)} TV` : `${fmtNumber(publishedMovies)} M / ${fmtNumber(publishedShows)} TV`;
       const publishedAt = state.catalog?.generated_at || state.catalogMeta?.generated_at;
-      q('#statRefresh').textContent = publishedAt ? fmtDate(publishedAt) : 'Pending';
+      q('#statRefresh').textContent = publishedAt ? fmtDate(publishedAt) : t('pending');
     }
     async function loadCatalog() {
-      showLoading('Opening the latest published snapshot…');
+      showLoading(t('openingSnapshot'));
       await loadCatalogMeta();
       const res = await fetch('/catalog_snapshot.json', { cache: 'no-store' });
       const data = await res.json();
       state.catalog = data;
-      state.items = data.items || [];
+      state.items = (data.items || []).map((item, idx) => ({ ...item, __idx: idx }));
+      data.items = state.items;
       if (state.catalogMeta && !state.catalog.generated_at) state.catalog.generated_at = state.catalogMeta.generated_at;
       renderGenreControls();
       renderCoverage();
@@ -930,11 +1406,11 @@ function openRefreshModal() {
       });
       const data = await res.json();
       if (!res.ok) {
-        q('#refreshPasswordError').textContent = data.error || 'Refresh could not be started.';
+        q('#refreshPasswordError').textContent = data.error || t('refreshError');
         return;
       }
       closeRefreshModal();
-      showNotice('A catalog refresh is coming soon');
+      showNotice(t('refreshSoon'));
     }
     function startRefresh() {
       openRefreshModal();
@@ -1009,14 +1485,21 @@ function openRefreshModal() {
       q('#cancelRefreshModalBtn').addEventListener('click', closeRefreshModal);
       q('#submitRefreshModalBtn').addEventListener('click', submitRefresh);
       q('#refreshModal').addEventListener('click', (event) => { if (event.target === q('#refreshModal')) closeRefreshModal(); });
+      q('#detailModal').addEventListener('click', (event) => { if (event.target === q('#detailModal')) closeDetailModal(); });
+      q('#detailCloseBtn').addEventListener('click', closeDetailModal);
       q('#refreshPasswordInput').addEventListener('keydown', (event) => { if (event.key === 'Enter') submitRefresh(); });
+      q('#langEnBtn').addEventListener('click', () => setLanguage('en'));
+      q('#langEsBtn').addEventListener('click', () => setLanguage('es'));
       window.addEventListener('resize', () => { if (!isMobile()) setDrawer(false); });
-      window.addEventListener('keydown', (event) => { if (event.key === 'Escape') { setDrawer(false); closeRefreshModal(); } });
+      window.addEventListener('keydown', (event) => { if (event.key === 'Escape') { setDrawer(false); closeRefreshModal(); closeDetailModal(); } });
     }
     async function init() {
+      updateLangButtons();
+      applyTranslations();
       renderTypeChips();
       renderServiceChips();
       renderPresetChips();
+      renderSortOptions();
       bindInputs();
       await loadCatalog();
     }
