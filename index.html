@@ -223,11 +223,26 @@
       font-size: 12px;
       white-space: nowrap;
     }
+    .mobile-action-bar > button { min-height: 46px; }
+    #mobileFiltersBtn {
+      background: linear-gradient(135deg, #89a7ff, #77e0cb);
+      color: #0a1223;
+      font-weight: 800;
+      border: 0;
+      box-shadow: 0 8px 24px rgba(122,162,255,0.22);
+      flex: 1 1 auto;
+    }
+    #mobileRefreshBtn.compact {
+      font-size: 12px;
+      padding: 11px 12px;
+      white-space: nowrap;
+      flex: 0 0 auto;
+    }
     .drawer-overlay {
       position: fixed;
       inset: 0;
       background: rgba(0,0,0,0.54);
-      backdrop-filter: blur(3px);
+      backdrop-filter: blur(2px);
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.18s ease;
@@ -306,8 +321,8 @@
       .result-table-wrap { display: none; }
       .result-cards { display: grid; }
       .mobile-action-bar { display: grid; }
-      .sidebar { position: fixed; inset: 0; z-index: 50; width: 100%; max-height: none; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; transform: translateY(100%); transition: transform 0.22s ease; border-radius: 0; padding: 0; }
-      .sidebar.open { transform: translateY(0); }
+      .sidebar { position: fixed; inset: 0; z-index: 50; width: 100%; max-height: none; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; transform: translate3d(0,100%,0); opacity: 0; transition: transform 0.14s ease-out, opacity 0.14s ease-out; will-change: transform, opacity; contain: layout paint style; border-radius: 0; padding: 0; }
+      .sidebar.open { transform: translate3d(0,0,0); opacity: 1; }
       .sidebar-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
       .sidebar-close { width:44px; height:44px; border-radius:999px; background: rgba(255,255,255,0.06); color: var(--text); border:1px solid rgba(255,255,255,0.08); }
     }
@@ -326,7 +341,7 @@
       .mobile-action-bar {
         left: 10px;
         right: 10px;
-        grid-template-columns: auto auto;
+        grid-template-columns: minmax(0,1fr) auto;
       }
       .mobile-action-bar .count-pill {
         grid-column: 1 / -1;
@@ -452,7 +467,10 @@
         overflow-y: auto !important;
         -webkit-overflow-scrolling: touch;
         overscroll-behavior: contain;
+        overscroll-behavior-y: contain;
         padding: 0;
+        background: rgba(13,23,40,0.985);
+        box-shadow: 0 -14px 40px rgba(0,0,0,0.35);
       }
       .sidebar-scroll {
         display: block;
@@ -466,8 +484,8 @@
         z-index: 3;
         margin: calc(-1 * (12px + env(safe-area-inset-top, 0px))) -18px 14px;
         padding: calc(12px + env(safe-area-inset-top, 0px)) 18px 14px;
-        background: linear-gradient(180deg, rgba(13,23,40,0.99) 82%, rgba(13,23,40,0.92) 100%);
-        backdrop-filter: blur(14px);
+        background: linear-gradient(180deg, rgba(13,23,40,0.995) 82%, rgba(13,23,40,0.96) 100%);
+        backdrop-filter: none;
       }
       .section-title { display: none; }
       .genre-box {
@@ -722,7 +740,7 @@
 
   <div class="mobile-action-bar mobile-only" id="mobileActionBar">
     <button class="ghost" id="mobileFiltersBtn">Filters</button>
-    <button class="ghost" id="mobileRefreshBtn">Admin Catalog Refresh</button>
+    <button class="ghost compact" id="mobileRefreshBtn">Catalog refresh</button>
     <div class="count-pill" id="mobileCount">0 matches</div>
   </div>
 
@@ -796,6 +814,7 @@
         eyebrow: 'Live streaming title database',
         heroSub: 'Browse current movies and TV shows across Netflix, Hulu, HBO Max, Disney+, Paramount+, Peacock, Prime Video, Apple TV+, and other major streaming services. Filter by multiple genres, content type, IMDb rating and vote ranges, year, runtime, and provider. The catalog refreshes automatically every two days, and manual refresh is password-protected.',
         adminRefresh: '↻ Admin Catalog Refresh',
+        mobileRefresh: 'Catalog refresh',
         resetFilters: 'Reset filters',
         exportCsv: 'Export filtered CSV',
         filters: 'Filters',
@@ -899,6 +918,7 @@
         eyebrow: 'Base de datos de streaming en vivo',
         heroSub: 'Explora películas y series actuales en Netflix, Hulu, HBO Max, Disney+, Paramount+, Peacock, Prime Video, Apple TV+ y otros servicios principales. Filtra por múltiples géneros, tipo de contenido, rangos de calificación y votos de IMDb, año, duración y servicio. El catálogo se actualiza automáticamente cada dos días y la actualización manual está protegida con contraseña.',
         adminRefresh: '↻ Actualización del catálogo',
+        mobileRefresh: 'Actualizar catálogo',
         resetFilters: 'Restablecer filtros',
         exportCsv: 'Exportar CSV filtrado',
         filters: 'Filtros',
@@ -1098,7 +1118,7 @@
       q('#thYear').textContent = t('year');
       q('#thRuntime').textContent = t('runtimeSeasons');
       q('#mobileFiltersBtn').textContent = t('filters');
-      q('#mobileRefreshBtn').textContent = t('adminRefresh').replace(/^↻\s*/, '');
+      q('#mobileRefreshBtn').textContent = t('mobileRefresh');
       q('#refreshModalTitle').textContent = t('refreshModalTitle');
       q('#refreshModalText').textContent = t('refreshModalText');
       q('#refreshPasswordInput').placeholder = t('refreshPasswordPlaceholder');
@@ -1208,6 +1228,22 @@
       if (!isMobile()) return;
       q('#sidebarPanel').classList.toggle('open', Boolean(open));
       document.body.classList.toggle('drawer-open', Boolean(open));
+    }
+    function bindFastAction(el, handler) {
+      let skipNextClick = false;
+      el.addEventListener('touchstart', (event) => {
+        if (!isMobile()) return;
+        event.preventDefault();
+        skipNextClick = true;
+        handler();
+      }, { passive: false });
+      el.addEventListener('click', () => {
+        if (skipNextClick) {
+          skipNextClick = false;
+          return;
+        }
+        handler();
+      });
     }
     function renderTypeChips() {
       const wrap = q('#typeChips');
@@ -1661,8 +1697,8 @@ function openRefreshModal() {
       q('#genreAnyBtn').addEventListener('click', () => { state.genreMode = 'any'; renderGenreControls(); applyFilters(); });
       q('#genreAllBtn').addEventListener('click', () => { state.genreMode = 'all'; renderGenreControls(); applyFilters(); });
       q('#clearGenresBtn').addEventListener('click', () => { state.selectedGenres = new Set(); renderGenreControls(); applyFilters(); });
-      q('#openFiltersBtn').addEventListener('click', () => setDrawer(true));
-      q('#mobileFiltersBtn').addEventListener('click', () => setDrawer(true));
+      bindFastAction(q('#openFiltersBtn'), () => setDrawer(true));
+      bindFastAction(q('#mobileFiltersBtn'), () => setDrawer(true));
       q('#closeFiltersBtn').addEventListener('click', () => setDrawer(false));
       q('#drawerOverlay').addEventListener('click', () => setDrawer(false));
       q('#mobileApplyBtn').addEventListener('click', () => setDrawer(false));
