@@ -583,6 +583,36 @@
       }
     }
 
+
+    .layout > main { min-width: 0; contain: layout style; }
+    .result-cards { contain: layout style paint; }
+
+    @media (max-width: 979px) {
+      .result-card {
+        content-visibility: auto;
+        contain-intrinsic-size: 520px;
+        contain: layout style paint;
+      }
+      .drawer-overlay,
+      .detail-modal-shell,
+      .modal-shell,
+      .mobile-action-bar,
+      .sidebar-header {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+      }
+      .drawer-overlay {
+        transition: opacity 0.01s linear;
+      }
+      .detail-modal-shell,
+      .modal-shell {
+        background: rgba(3, 8, 16, 0.94);
+      }
+      .sidebar {
+        will-change: transform, opacity;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -803,13 +833,15 @@
       pollTimer: null,
       currentTaskId: null,
       renderToken: 0,
+      itemLookup: new Map(),
+      detailHandlersBound: false,
     };
 
     const browserLang = (navigator.language || '').toLowerCase().startsWith('es') ? 'es' : 'en';
     const storedLang = (() => { try { return localStorage.getItem('danielsMovieToolLang'); } catch (e) { return null; } })();
     state.lang = storedLang || browserLang;
     state.detailItem = null;
-    const WEBSITE_CODE_UPDATED_AT = '2026-04-28T16:45:00Z';
+    const WEBSITE_CODE_UPDATED_AT = '2026-04-28T20:15:00Z';
 
     const TRANSLATIONS = {
       en: {
@@ -1234,13 +1266,16 @@
       if (!isMobile()) return;
       const panel = q('#sidebarPanel');
       const shouldOpen = Boolean(open);
-      document.body.classList.toggle('drawer-open', shouldOpen);
       if (shouldOpen) {
+        document.body.classList.add('drawer-open');
         panel.classList.add('preopen');
-        requestAnimationFrame(() => panel.classList.add('open'));
+        panel.classList.add('open');
       } else {
         panel.classList.remove('open');
         panel.classList.remove('preopen');
+        if (q('#detailModal').hidden && q('#refreshModal').hidden) {
+          document.body.classList.remove('drawer-open');
+        }
       }
     }
     function bindFastAction(el, handler) {
@@ -1524,20 +1559,24 @@ function renderResults() {
   requestAnimationFrame(pump);
 }
 function bindDetailHandlers() {
-  qa('[data-detail-index]').forEach(el => {
-    el.querySelectorAll('a').forEach(link => link.addEventListener('click', (event) => event.stopPropagation()));
-    el.addEventListener('click', () => {
-      const idx = Number(el.dataset.detailIndex);
-      const item = state.filtered.find(entry => entry.__idx === idx);
-      if (item) openDetailModal(item);
-    });
-  });
+  if (state.detailHandlersBound) return;
+  state.detailHandlersBound = true;
+  const delegatedClick = (event) => {
+    if (event.target.closest('a')) return;
+    const row = event.target.closest('[data-detail-index]');
+    if (!row) return;
+    const item = state.itemLookup.get(Number(row.dataset.detailIndex));
+    if (item) openDetailModal(item);
+  };
+  q('#resultsCards').addEventListener('click', delegatedClick);
+  q('#resultsBody').addEventListener('click', delegatedClick);
 }
 function openDetailModal(item) {
   state.detailItem = item;
-  renderDetailModal();
-  q('#detailModal').hidden = false;
+  const modal = q('#detailModal');
+  modal.hidden = false;
   document.body.classList.add('drawer-open');
+  requestAnimationFrame(() => renderDetailModal());
 }
 function closeDetailModal() {
   state.detailItem = null;
@@ -1618,6 +1657,7 @@ function renderCoverage() {
       const data = await res.json();
       state.catalog = data;
       state.items = (data.items || []).map((item, idx) => ({ ...item, __idx: idx }));
+      state.itemLookup = new Map(state.items.map(item => [item.__idx, item]));
       data.items = state.items;
       if (state.catalogMeta && !state.catalog.generated_at) state.catalog.generated_at = state.catalogMeta.generated_at;
       renderGenreControls();
