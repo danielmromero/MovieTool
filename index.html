@@ -245,7 +245,7 @@
       backdrop-filter: blur(2px);
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.18s ease;
+      transition: opacity 0.06s linear;
       z-index: 45;
     }
     body.drawer-open .drawer-overlay {
@@ -321,8 +321,9 @@
       .result-table-wrap { display: none; }
       .result-cards { display: grid; }
       .mobile-action-bar { display: grid; }
-      .sidebar { position: fixed; inset: 0; z-index: 50; width: 100%; max-height: none; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; transform: translate3d(0,100%,0); opacity: 0; transition: transform 0.14s ease-out, opacity 0.14s ease-out; will-change: transform, opacity; contain: layout paint style; border-radius: 0; padding: 0; }
-      .sidebar.open { transform: translate3d(0,0,0); opacity: 1; }
+      .sidebar { position: fixed; inset: 0; z-index: 50; width: 100%; max-height: none; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; transform: translate3d(0,100%,0); opacity: 0; pointer-events: none; transition: transform 0.01s linear, opacity 0.01s linear; will-change: transform, opacity; contain: layout paint style; border-radius: 0; padding: 0; visibility: hidden; }
+      .sidebar.preopen { visibility: visible; }
+      .sidebar.open { transform: translate3d(0,0,0); opacity: 1; pointer-events: auto; visibility: visible; }
       .sidebar-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
       .sidebar-close { width:44px; height:44px; border-radius:999px; background: rgba(255,255,255,0.06); color: var(--text); border:1px solid rgba(255,255,255,0.08); }
     }
@@ -808,6 +809,7 @@
     const storedLang = (() => { try { return localStorage.getItem('danielsMovieToolLang'); } catch (e) { return null; } })();
     state.lang = storedLang || browserLang;
     state.detailItem = null;
+    const WEBSITE_CODE_UPDATED_AT = '2026-04-28T00:00:00Z';
 
     const TRANSLATIONS = {
       en: {
@@ -1189,7 +1191,11 @@
     }
     function updateSiteFooterTimestamp() {
       const publishedAt = state.catalog?.generated_at || state.catalogMeta?.generated_at;
-      q('#siteUpdateValue').textContent = publishedAt ? fmtDate(publishedAt) : t('pending');
+      const codeAt = WEBSITE_CODE_UPDATED_AT;
+      let latest = null;
+      if (publishedAt && codeAt) latest = new Date(publishedAt) > new Date(codeAt) ? publishedAt : codeAt;
+      else latest = publishedAt || codeAt || null;
+      q('#siteUpdateValue').textContent = latest ? fmtDate(latest) : t('pending');
     }
 
     function servicePill(key) {
@@ -1226,20 +1232,37 @@
     }
     function setDrawer(open) {
       if (!isMobile()) return;
-      q('#sidebarPanel').classList.toggle('open', Boolean(open));
-      document.body.classList.toggle('drawer-open', Boolean(open));
+      const panel = q('#sidebarPanel');
+      const shouldOpen = Boolean(open);
+      document.body.classList.toggle('drawer-open', shouldOpen);
+      if (shouldOpen) {
+        panel.classList.add('preopen');
+        requestAnimationFrame(() => panel.classList.add('open'));
+      } else {
+        panel.classList.remove('open');
+        panel.classList.remove('preopen');
+      }
     }
     function bindFastAction(el, handler) {
-      let skipNextClick = false;
-      el.addEventListener('touchstart', (event) => {
+      let handled = false;
+      const fastHandler = (event) => {
         if (!isMobile()) return;
-        event.preventDefault();
-        skipNextClick = true;
+        if (event) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        handled = true;
         handler();
+        setTimeout(() => { handled = false; }, 380);
+      };
+      el.addEventListener('pointerdown', (event) => {
+        if (event.pointerType === 'mouse' || !isMobile()) return;
+        fastHandler(event);
       }, { passive: false });
-      el.addEventListener('click', () => {
-        if (skipNextClick) {
-          skipNextClick = false;
+      el.addEventListener('touchstart', fastHandler, { passive: false });
+      el.addEventListener('click', (event) => {
+        if (handled) {
+          event.preventDefault();
           return;
         }
         handler();
