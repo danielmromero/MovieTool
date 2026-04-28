@@ -355,7 +355,7 @@
         <h1>Daniel's Movie Tool</h1>
         <p class="sub">Browse current movies and TV shows across Netflix, Hulu, HBO Max, Disney+, Paramount+, Peacock, Prime Video, Apple TV+, and other major streaming services. Filter by multiple genres, content type, IMDb rating and vote ranges, year, runtime, and provider. The catalog refreshes automatically every two days, and manual refresh is password-protected.</p>
         <div class="hero-actions">
-          <button class="primary" id="refreshBtn">↻ Publish refresh</button>
+          <button class="primary" id="refreshBtn">↻ Admin Catalog Refresh</button>
           <button class="ghost" id="clearBtn">Reset filters</button>
           <button class="ghost desktop-only" id="exportBtn">Export filtered CSV</button>
           <button class="ghost mobile-only" id="openFiltersBtn">Filters</button>
@@ -390,7 +390,6 @@
         <div class="field">
           <label>Services</label>
           <div class="chip-row">
-            <button type="button" class="chip" id="servicesDefaultBtn">Netflix + Hulu</button>
             <button type="button" class="chip" id="servicesClearBtn">Clear all</button>
             <button type="button" class="chip" id="servicesAllBtn">All services</button>
           </div>
@@ -511,6 +510,7 @@
   <script>
     const state = {
       catalog: null,
+      catalogMeta: null,
       items: [],
       filtered: [],
       selectedServices: new Set(["netflix", "hulu"]),
@@ -865,21 +865,42 @@ function renderResults() {
 function renderCoverage() {
       return;
     }
+    function moviesFromMeta() {
+      return Number(state.catalogMeta?.movie_count || 0);
+    }
+    function showsFromMeta() {
+      return Number(state.catalogMeta?.show_count || 0);
+    }
+    async function loadCatalogMeta() {
+      const res = await fetch('/api/catalog-meta', { cache: 'no-store' });
+      const data = await res.json();
+      state.catalogMeta = data;
+      renderStats();
+      const publishedAt = data.generated_at ? fmtDate(data.generated_at) : 'Pending';
+      const titleCount = data.item_count ? `${fmtNumber(data.item_count)} published titles` : 'published snapshot';
+      showLoading(`Published snapshot: ${publishedAt}. Loading ${titleCount}…`);
+    }
     function renderStats() {
       const total = state.catalog?.items?.length || 0;
       const visibleMovies = state.filtered.filter(item => item.object_type === 'MOVIE').length;
       const visibleShows = state.filtered.filter(item => item.object_type === 'SHOW').length;
-      q('#statTitles').textContent = fmtNumber(total);
+      const publishedTotal = total || state.catalogMeta?.item_count || 0;
+      const publishedMovies = moviesFromMeta();
+      const publishedShows = showsFromMeta();
+      q('#statTitles').textContent = fmtNumber(publishedTotal);
       q('#statVisible').textContent = fmtNumber(state.filtered.length);
-      q('#statMix').textContent = `${fmtNumber(visibleMovies)} M / ${fmtNumber(visibleShows)} TV`;
-      q('#statRefresh').textContent = state.catalog?.generated_at ? fmtDate(state.catalog.generated_at) : 'Pending';
+      q('#statMix').textContent = total ? `${fmtNumber(visibleMovies)} M / ${fmtNumber(visibleShows)} TV` : `${fmtNumber(publishedMovies)} M / ${fmtNumber(publishedShows)} TV`;
+      const publishedAt = state.catalog?.generated_at || state.catalogMeta?.generated_at;
+      q('#statRefresh').textContent = publishedAt ? fmtDate(publishedAt) : 'Pending';
     }
     async function loadCatalog() {
       showLoading('Opening the latest published snapshot…');
-      const res = await fetch('/api/catalog', { cache: 'no-store' });
+      await loadCatalogMeta();
+      const res = await fetch('/catalog_snapshot.json', { cache: 'no-store' });
       const data = await res.json();
       state.catalog = data;
       state.items = data.items || [];
+      if (state.catalogMeta && !state.catalog.generated_at) state.catalog.generated_at = state.catalogMeta.generated_at;
       renderGenreControls();
       renderCoverage();
       applyFilters();
@@ -913,7 +934,7 @@ function openRefreshModal() {
         return;
       }
       closeRefreshModal();
-      showNotice('GitHub refresh started. The published snapshot will update for future visitors after the workflow finishes and Render redeploys.', data.actions_url || state.catalog?.github_actions_url || '');
+      showNotice('A catalog refresh is coming soon');
     }
     function startRefresh() {
       openRefreshModal();
@@ -973,7 +994,6 @@ function openRefreshModal() {
       q('#refreshBtn').addEventListener('click', startRefresh);
       q('#mobileRefreshBtn').addEventListener('click', startRefresh);
       q('#clearBtn').addEventListener('click', clearFilters);
-      q('#servicesDefaultBtn').addEventListener('click', () => { state.selectedServices = new Set(['netflix', 'hulu']); renderServiceChips(); applyFilters(); });
       q('#servicesClearBtn').addEventListener('click', () => { state.selectedServices = new Set(); renderServiceChips(); applyFilters(); });
       q('#servicesAllBtn').addEventListener('click', () => { state.selectedServices = new Set(Object.keys(SERVICE_LABELS)); renderServiceChips(); applyFilters(); });
       q('#exportBtn').addEventListener('click', exportCsv);
