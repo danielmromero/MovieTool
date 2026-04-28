@@ -33,7 +33,7 @@
       min-height: 100vh;
       overflow-x: hidden;
     }
-    body.drawer-open { overflow: hidden; }
+    body.drawer-open { overflow: hidden; touch-action: none; }
     a { color: inherit; }
     .shell { max-width: 1780px; margin: 0 auto; padding: 28px; }
     .hero { display: grid; grid-template-columns: 1.35fr 0.95fr; gap: 20px; margin-bottom: 20px; }
@@ -306,7 +306,7 @@
       .result-table-wrap { display: none; }
       .result-cards { display: grid; }
       .mobile-action-bar { display: grid; }
-      .sidebar { position: fixed; inset: 0; z-index: 50; width: 100%; max-height: none; overflow: auto; transform: translateY(100%); transition: transform 0.22s ease; border-radius: 0; padding: 20px 18px calc(120px + var(--safe-bottom)); }
+      .sidebar { position: fixed; inset: 0; z-index: 50; width: 100%; max-height: none; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; transform: translateY(100%); transition: transform 0.22s ease; border-radius: 0; padding: 0; }
       .sidebar.open { transform: translateY(0); }
       .sidebar-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
       .sidebar-close { width:44px; height:44px; border-radius:999px; background: rgba(255,255,255,0.06); color: var(--text); border:1px solid rgba(255,255,255,0.08); }
@@ -445,28 +445,31 @@
     @media (max-width: 979px) {
       .drawer-open .mobile-action-bar { display: none !important; }
       .sidebar {
+        display: flex;
+        flex-direction: column;
         height: 100dvh;
         max-height: 100dvh;
-        overflow: hidden !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
         padding: 0;
       }
       .sidebar-scroll {
         display: block;
-        flex: 1 1 auto;
-        min-height: 0;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-        overscroll-behavior: contain;
-        padding: calc(12px + env(safe-area-inset-top, 0px)) 18px calc(120px + env(safe-area-inset-bottom, 0px));
+        min-height: max-content;
+        overflow: visible;
+        padding: calc(12px + env(safe-area-inset-top, 0px)) 18px calc(132px + env(safe-area-inset-bottom, 0px));
       }
       .sidebar-header {
         position: sticky;
         top: 0;
-        margin: 0 0 14px;
-        padding: 12px 0 14px;
-        background: linear-gradient(180deg, rgba(13,23,40,0.98) 78%, rgba(13,23,40,0));
+        z-index: 3;
+        margin: calc(-1 * (12px + env(safe-area-inset-top, 0px))) -18px 14px;
+        padding: calc(12px + env(safe-area-inset-top, 0px)) 18px 14px;
+        background: linear-gradient(180deg, rgba(13,23,40,0.99) 82%, rgba(13,23,40,0.92) 100%);
         backdrop-filter: blur(14px);
       }
+      .section-title { display: none; }
       .genre-box {
         max-height: none;
         overflow: visible;
@@ -476,10 +479,11 @@
         grid-template-columns: 1fr 1fr;
         gap: 10px;
         position: sticky;
-        bottom: calc(8px + env(safe-area-inset-bottom, 0px));
-        padding-top: 12px;
-        margin-top: 14px;
-        background: linear-gradient(180deg, rgba(13,23,40,0), rgba(13,23,40,0.96) 28%);
+        bottom: calc(-1 * env(safe-area-inset-bottom, 0px));
+        margin: 18px -18px 0;
+        padding: 14px 18px calc(14px + env(safe-area-inset-bottom, 0px));
+        background: linear-gradient(180deg, rgba(13,23,40,0.88), rgba(13,23,40,0.99));
+        border-top: 1px solid rgba(255,255,255,0.08);
       }
       .mobile-filter-actions .primary,
       .mobile-filter-actions .ghost {
@@ -535,6 +539,28 @@
       }
       .detail-metric-grid {
         grid-template-columns: 1fr 1fr;
+      }
+    }
+
+
+    .site-update-footer {
+      margin-top: 18px;
+      padding: 0 6px calc(12px + var(--safe-bottom));
+      text-align: center;
+      color: rgba(238, 244, 255, 0.62);
+      font-size: 12px;
+      line-height: 1.4;
+      letter-spacing: 0.01em;
+    }
+    .site-update-footer strong {
+      color: rgba(238, 244, 255, 0.82);
+      font-weight: 600;
+    }
+    @media (max-width: 979px) {
+      .site-update-footer {
+        margin-top: 10px;
+        padding-bottom: calc(90px + var(--safe-bottom));
+        font-size: 11px;
       }
     }
 
@@ -688,6 +714,10 @@
         </div>
       </main>
     </section>
+      <div class="site-update-footer" id="siteUpdateFooter">
+        <span id="siteUpdateLabel">Website updated</span>
+        <strong id="siteUpdateValue">Pending</strong>
+      </div>
   </div>
 
   <div class="mobile-action-bar mobile-only" id="mobileActionBar">
@@ -863,6 +893,7 @@
         openLinks: 'Open links',
         popularity: 'Popularity',
         close: 'Close',
+        websiteUpdated: 'Website updated',
       },
       es: {
         eyebrow: 'Base de datos de streaming en vivo',
@@ -965,6 +996,7 @@
         openLinks: 'Abrir enlaces',
         popularity: 'Popularidad',
         close: 'Cerrar',
+        websiteUpdated: 'Sitio actualizado',
       }
     };
 
@@ -1076,6 +1108,7 @@
       q('#detailServicesTitle').textContent = t('availableOn');
       q('#detailGenresTitle').textContent = t('genres');
       q('#detailLinksTitle').textContent = t('openLinks');
+      q('#siteUpdateLabel').textContent = t('websiteUpdated');
       if (!state.filtered.length) q('#mobileCount').textContent = t('zeroMatches');
     }
 
@@ -1134,6 +1167,11 @@
       if (Number.isNaN(d.getTime())) return iso;
       return d.toLocaleString(state.lang === 'es' ? 'es-ES' : 'en-US', { dateStyle: 'medium', timeStyle: 'short' });
     }
+    function updateSiteFooterTimestamp() {
+      const publishedAt = state.catalog?.generated_at || state.catalogMeta?.generated_at;
+      q('#siteUpdateValue').textContent = publishedAt ? fmtDate(publishedAt) : t('pending');
+    }
+
     function servicePill(key) {
       return `<span class="tag">${SERVICE_LABELS[key] || key}</span>`;
     }
@@ -1496,6 +1534,7 @@ function renderCoverage() {
       state.catalogMeta = data;
       renderStats();
       const publishedAt = data.generated_at ? fmtDate(data.generated_at) : t('pending');
+      updateSiteFooterTimestamp();
       const titleCount = data.item_count ? t('publishedTitles', { count: fmtNumber(data.item_count) }) : t('publishedSnapshot');
       showLoading(t('publishedSnapshotLoading', { publishedAt, titleCount }));
     }
@@ -1511,6 +1550,7 @@ function renderCoverage() {
       q('#statMix').textContent = total ? `${fmtNumber(visibleMovies)} M / ${fmtNumber(visibleShows)} TV` : `${fmtNumber(publishedMovies)} M / ${fmtNumber(publishedShows)} TV`;
       const publishedAt = state.catalog?.generated_at || state.catalogMeta?.generated_at;
       q('#statRefresh').textContent = publishedAt ? fmtDate(publishedAt) : t('pending');
+      updateSiteFooterTimestamp();
     }
     async function loadCatalog() {
       showLoading(t('openingSnapshot'));
